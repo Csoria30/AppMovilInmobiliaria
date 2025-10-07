@@ -22,4 +22,9 @@
         android:name="com.ulp.appinmobiliaria.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+    <activity
+        android:id="@+id/loginActivity"
+        android:name="com.ulp.appinmobiliaria.ui.login.LoginActivity"
+        android:label="activity_login"
+        tools:layout="@layout/activity_login" />
 </navigation>
