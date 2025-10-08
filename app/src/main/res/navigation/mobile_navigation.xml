@@ -3,28 +3,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_ubicacion">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.ulp.appinmobiliaria.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/nav_ubicacion"
+        android:name="com.ulp.appinmobiliaria.ui.ubicacion.UbicacionFragment"
+        android:label="@string/menu_inicio"
+        tools:layout="@layout/fragment_ubicacion" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.ulp.appinmobiliaria.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_perfil"
+        android:name="com.ulp.appinmobiliaria.ui.perfil.PerfilFragment"
+        android:label="@string/menu_perfil"
+        tools:layout="@layout/fragment_perfil" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.ulp.appinmobiliaria.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_inmueble"
+        android:name="com.ulp.appinmobiliaria.ui.inmueble.InmuebleFragment"
+        android:label="@string/menu_inmuebles"
+        tools:layout="@layout/fragment_inmueble" />
+
+    <fragment
+        android:id="@+id/nav_inquilino"
+        android:name="com.ulp.appinmobiliaria.ui.inquilino.InquilinoFragment"
+        android:label="@string/menu_inquilinos"
+        tools:layout="@layout/fragment_inquilino" />
+
+    <fragment
+        android:id="@+id/nav_contrato"
+        android:name="com.ulp.appinmobiliaria.ui.contrato.ContratoFragment"
+        android:label="@string/menu_contratos"
+        tools:layout="@layout/fragment_contrato" />
+
     <activity
         android:id="@+id/loginActivity"
         android:name="com.ulp.appinmobiliaria.ui.login.LoginActivity"
         android:label="activity_login"
         tools:layout="@layout/activity_login" />
+
 </navigation>
