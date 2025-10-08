@@ -19,6 +19,12 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Theme.AppInmobiliaria.NavigationView" parent="">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnSurface">@color/nav_item_color</item>
+        <item name="android:textColorSecondary">@color/nav_item_color</item>
+    </style>
+
     <style name="Theme.AppInmobiliaria.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.AppInmobiliaria.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
