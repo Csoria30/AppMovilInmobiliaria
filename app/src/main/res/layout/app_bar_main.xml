@@ -6,16 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ppcompat.widget.Toolb" /> -->
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.AppInmobiliaria.AppBarOverlay">
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/primary"
             app:popupTheme="@style/Theme.AppInmobiliaria.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -29,6 +35,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
+        app:backgroundTint="@color/primary"
         app:srcCompat="@android:drawable/ic_dialog_email" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
