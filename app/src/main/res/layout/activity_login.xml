@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Inmobiliaria ULP"
-            android:textColor="#2C3E50"
+            android:textColor="@color/text_primary"
             android:textSize="26sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Tu hogar te está esperando"
-            android:textColor="#7F8C8D"
+            android:textColor="@color/text_secondary"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:text="Iniciar Sesión"
-                android:textColor="#2C3E50"
+                android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -102,8 +102,8 @@
                     android:hint="Correo electrónico"
                     android:inputType="textEmailAddress"
                     android:paddingEnd="16dp"
-                    android:textColor="#2C3E50"
-                    android:textColorHint="#95A5A6"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_hint"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -135,8 +135,8 @@
                     android:hint="Contraseña"
                     android:inputType="textPassword"
                     android:paddingEnd="16dp"
-                    android:textColor="#2C3E50"
-                    android:textColorHint="#95A5A6"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_hint"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -146,11 +146,12 @@
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@drawable/button_background"
+                android:backgroundTint="@color/primary"
                 android:text="INICIAR SESIÓN"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:cornerRadius="12dp" />
 
         </LinearLayout>
 
@@ -163,7 +164,7 @@
             android:layout_marginBottom="30dp"
             android:gravity="center"
             android:text="¿Necesitas ayuda?\nContacta a soporte técnico"
-            android:textColor="#7F8C8D"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

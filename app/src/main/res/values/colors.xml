@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Originales -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,4 +8,25 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Colores principales del sistema inmobiliario -->
+    <color name="primary">#198754</color>               <!-- Verde principal -->
+    <color name="primary_dark">#146c43</color>          <!-- Verde oscuro -->
+    <color name="secondary">#20c997</color>             <!-- Verde secundario -->
+
+    <!-- Colores de estado -->
+    <color name="success">#198754</color>               <!-- Verde éxito -->
+    <color name="warning">#ffc107</color>               <!-- Amarillo advertencia -->
+    <color name="danger">#dc3545</color>                <!-- Rojo error -->
+
+    <!-- Colores de fondo y texto -->
+    <color name="background_light">#f8f9fa</color>      <!-- Fondo claro -->
+    <color name="text_primary">#212529</color>          <!-- Texto principal -->
+    <color name="text_secondary">#6c757d</color>        <!-- Texto secundario -->
+    <color name="text_hint">#95A5A6</color>             <!-- Texto hint -->
+
+    <!-- Colores para cards y elementos -->
+    <color name="card_background">#ffffff</color>       <!-- Fondo cards -->
+    <color name="input_background">#f8f9fa</color>      <!-- Fondo inputs -->
+    <color name="border_light">#e9ecef</color>          <!-- Bordes claros -->
 </resources>
