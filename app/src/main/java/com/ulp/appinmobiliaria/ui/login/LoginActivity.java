@@ -33,11 +33,9 @@ public class LoginActivity extends AppCompatActivity {
         viewModel.getLoginExitoso().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean loginExitoso) {
-
-                    Toast.makeText(LoginActivity.this, "Login exitoso", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-
+                Toast.makeText(LoginActivity.this, "Login exitoso", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
             }
         });
 
