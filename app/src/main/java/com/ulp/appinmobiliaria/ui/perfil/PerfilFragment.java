@@ -1,5 +1,6 @@
 package com.ulp.appinmobiliaria.ui.perfil;
 
+import androidx.lifecycle.AndroidViewModel_androidKt;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
@@ -13,10 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ulp.appinmobiliaria.R;
+import com.ulp.appinmobiliaria.databinding.FragmentPerfilBinding;
+import com.ulp.appinmobiliaria.model.PropietarioModel;
 
 public class PerfilFragment extends Fragment {
 
-    private PerfilViewModel mViewModel;
+    private FragmentPerfilBinding binding;
+    private PerfilViewModel viewModel;
+
 
     public static PerfilFragment newInstance() {
         return new PerfilFragment();
@@ -25,14 +30,27 @@ public class PerfilFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_perfil, container, false);
+
+        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(PerfilViewModel.class);
+        binding = FragmentPerfilBinding.inflate(inflater, container, false);
+
+        //Observers
+        viewModel.getmPropietario().observe(getViewLifecycleOwner(), propietario  -> {
+            actualizarUI(propietario);
+        });
+
+        viewModel.obtenerPerfil();
+
+        return binding.getRoot();
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(PerfilViewModel.class);
-        // TODO: Use the ViewModel
+    //Cargando datos del perfil
+    private void actualizarUI(PropietarioModel propietario){
+        binding.tvDni.setText(propietario.getDni());
+        binding.tvNombre.setText(propietario.getNombre());
+        binding.tvApellido.setText(propietario.getApellido());
+        binding.tvEmail.setText(propietario.getEmail());
+        binding.tvTelefono.setText(propietario.getTelefono());
     }
 
 }

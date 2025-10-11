@@ -14,6 +14,9 @@ activity = "1.11.0"
 legacySupportV4 = "1.0.0"
 converterGson = "3.0.0"
 retrofit = "3.0.0"
+playServices = "12.0.1"
+playServicesMaps = "19.2.0"
+playServicesLocation = "21.3.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -30,6 +33,9 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGson" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+play-services = { group = "com.google.android.gms", name = "play-services", version.ref = "playServices" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

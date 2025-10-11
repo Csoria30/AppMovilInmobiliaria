@@ -1,5 +1,10 @@
 package com.ulp.appinmobiliaria;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
@@ -29,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
+
+        //Solicitar Persmisos
+        solicitarPermisos();
+
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,5 +77,18 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    /*Solicitar permisos de ubicacion al usuario*/
+    public void solicitarPermisos(){
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M &&
+                (checkSelfPermission(ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)  ||
+                (checkSelfPermission(ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED))
+        {
+            requestPermissions(new String[]{
+                    ACCESS_FINE_LOCATION,
+                    ACCESS_COARSE_LOCATION
+            },1000);
+        }
     }
 }

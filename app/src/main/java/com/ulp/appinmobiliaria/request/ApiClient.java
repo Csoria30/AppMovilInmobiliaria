@@ -5,12 +5,15 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ulp.appinmobiliaria.model.PropietarioModel;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public class ApiClient {
@@ -47,5 +50,9 @@ public class ApiClient {
         @FormUrlEncoded
         @POST("api/Propietarios/login")
         Call<String> login(@Field("Usuario") String u, @Field("Clave") String c);
+
+        //Obtener perfil
+        @GET("api/propietarios")
+        Call<PropietarioModel> obtenerPerfil(@Header("Authorization") String token);
     }
 }
