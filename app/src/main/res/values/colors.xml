@@ -13,6 +13,11 @@
     <color name="primary">#198754</color>               <!-- Verde principal -->
     <color name="primary_dark">#146c43</color>          <!-- Verde oscuro -->
     <color name="secondary">#20c997</color>             <!-- Verde secundario -->
+    <color name="green_accent">#58D68D</color>           <!-- Verde acento -->
+    <color name="green_primary">#27AE60</color>
+    <color name="green_primary_dark">#229954</color>
+    <color name="green_light">#2ECC71</color>
+    <color name="green_pressed">#1E8449</color>
 
     <!-- Colores de estado -->
     <color name="success">#198754</color>               <!-- Verde éxito -->

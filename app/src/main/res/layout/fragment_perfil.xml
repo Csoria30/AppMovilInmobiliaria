@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="24dp">
+
         <!-- Header del perfil -->
         <LinearLayout
             android:id="@+id/headerPerfil"
@@ -46,7 +47,7 @@
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
-        </LinearLayout>    <!-- .Header del perfil -->
+        </LinearLayout>
 
         <!-- Información del perfil -->
         <LinearLayout
@@ -70,7 +71,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- Campo Código -->
+            <!-- Campo Código (SOLO LECTURA - NO EDITABLE) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,7 +108,7 @@
                     android:textColor="#2C3E50"
                     android:textSize="16sp" />
 
-            </LinearLayout> <!-- Campo Código -->
+            </LinearLayout>
 
             <!-- Campo DNI -->
             <LinearLayout
@@ -135,6 +136,7 @@
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
+                <!-- TextView para modo vista -->
                 <TextView
                     android:id="@+id/tvDni"
                     android:layout_width="0dp"
@@ -146,7 +148,21 @@
                     android:textColor="#2C3E50"
                     android:textSize="16sp" />
 
-            </LinearLayout> <!-- Campo DNI -->
+                <!-- EditText para modo edición -->
+                <EditText
+                    android:id="@+id/etDni"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:gravity="center_vertical"
+                    android:inputType="number"
+                    android:paddingEnd="16dp"
+                    android:textColor="#2C3E50"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
             <!-- Campo Nombre -->
             <LinearLayout
@@ -174,6 +190,7 @@
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
+                <!-- TextView para modo vista -->
                 <TextView
                     android:id="@+id/tvNombre"
                     android:layout_width="0dp"
@@ -185,7 +202,21 @@
                     android:textColor="#2C3E50"
                     android:textSize="16sp" />
 
-            </LinearLayout><!-- Campo Nombre -->
+                <!-- EditText para modo edición -->
+                <EditText
+                    android:id="@+id/etNombre"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:gravity="center_vertical"
+                    android:inputType="textPersonName"
+                    android:paddingEnd="16dp"
+                    android:textColor="#2C3E50"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
             <!-- Campo Apellido -->
             <LinearLayout
@@ -213,6 +244,7 @@
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
+                <!-- TextView para modo vista -->
                 <TextView
                     android:id="@+id/tvApellido"
                     android:layout_width="0dp"
@@ -224,7 +256,21 @@
                     android:textColor="#2C3E50"
                     android:textSize="16sp" />
 
-            </LinearLayout> <!-- Campo Apellido -->
+                <!-- EditText para modo edición -->
+                <EditText
+                    android:id="@+id/etApellido"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:gravity="center_vertical"
+                    android:inputType="textPersonName"
+                    android:paddingEnd="16dp"
+                    android:textColor="#2C3E50"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
             <!-- Campo Email -->
             <LinearLayout
@@ -252,6 +298,7 @@
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
+                <!-- TextView para modo vista -->
                 <TextView
                     android:id="@+id/tvEmail"
                     android:layout_width="0dp"
@@ -263,7 +310,21 @@
                     android:textColor="#2C3E50"
                     android:textSize="16sp" />
 
-            </LinearLayout> <!-- Campo Email -->
+                <!-- EditText para modo edición -->
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:gravity="center_vertical"
+                    android:inputType="textEmailAddress"
+                    android:paddingEnd="16dp"
+                    android:textColor="#2C3E50"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
             <!-- Campo Teléfono -->
             <LinearLayout
@@ -291,6 +352,7 @@
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
+                <!-- TextView para modo vista -->
                 <TextView
                     android:id="@+id/tvTelefono"
                     android:layout_width="0dp"
@@ -302,12 +364,57 @@
                     android:textColor="#2C3E50"
                     android:textSize="16sp" />
 
-            </LinearLayout><!-- Campo Teléfono -->
-            
+                <!-- EditText para modo edición -->
+                <EditText
+                    android:id="@+id/etTelefono"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:gravity="center_vertical"
+                    android:inputType="phone"
+                    android:paddingEnd="16dp"
+                    android:textColor="#2C3E50"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
 
+            </LinearLayout>
 
-        </LinearLayout>    <!-- Información del perfil -->
+        </LinearLayout>
 
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/btnEditarPerfil"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/containerInformacion" />
+
+        <!-- Botón Editar/Guardar -->
+        <Button
+            android:id="@+id/btnEditarPerfil"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="32dp"
+            android:drawableStart="@drawable/ic_edit"
+            android:drawablePadding="12dp"
+            android:elevation="4dp"
+            android:minHeight="56dp"
+            android:padding="16dp"
+            android:text="Editar Perfil"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/containerInformacion" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

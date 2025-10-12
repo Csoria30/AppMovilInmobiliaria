@@ -10,11 +10,13 @@ import com.ulp.appinmobiliaria.model.PropietarioModel;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 
 public class ApiClient {
     public static final String URLBASE = "https://inmobiliariaulp-amb5hwfqaraweyga.canadacentral-01.azurewebsites.net/";
@@ -54,5 +56,9 @@ public class ApiClient {
         //Obtener perfil
         @GET("api/propietarios")
         Call<PropietarioModel> obtenerPerfil(@Header("Authorization") String token);
+
+        //Actualizar Perfil
+        @PUT("api/Propietarios/actualizar")
+        Call<PropietarioModel> actualizarPerfil(@Header("Authorization") String token, @Body PropietarioModel propietario);
     }
 }

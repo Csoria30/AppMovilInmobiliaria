@@ -1,6 +1,8 @@
 package com.ulp.appinmobiliaria.model;
 
-public class PropietarioModel {
+import java.io.Serializable;
+
+public class PropietarioModel implements Serializable {
     private int idPropietario;
     private String nombre;
     private String apellido;
