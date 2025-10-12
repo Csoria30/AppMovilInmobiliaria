@@ -2,6 +2,7 @@ package com.ulp.appinmobiliaria.request;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -47,6 +48,7 @@ public class ApiClient {
         SharedPreferences sp = context.getSharedPreferences("token.xml", Context.MODE_PRIVATE);
         return sp.getString("token", null);
     }
+
 
     public interface InmobiliariaService{
         @FormUrlEncoded

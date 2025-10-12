@@ -15,7 +15,18 @@
         android:id="@+id/nav_perfil"
         android:name="com.ulp.appinmobiliaria.ui.perfil.PerfilFragment"
         android:label="@string/menu_perfil"
-        tools:layout="@layout/fragment_perfil" />
+        tools:layout="@layout/fragment_perfil" >
+
+        <action
+            android:id="@+id/action_perfilFragment_to_cambiarContrasenaFragment"
+            app:destination="@+id/cambiarContrasenaFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cambiarContrasenaFragment"
+        android:name="com.ulp.appinmobiliaria.ui.perfil.CambiarContrasenaFragment"
+        android:label="Cambiar Contraseña"
+        tools:layout="@layout/fragment_cambiar_contrasena" />
 
     <fragment
         android:id="@+id/nav_inmueble"

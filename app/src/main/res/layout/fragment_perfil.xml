@@ -393,13 +393,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/containerInformacion" />
 
-        <!-- Botón Editar/Guardar -->
         <Button
             android:id="@+id/btnEditarPerfil"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/button_primary_background"
             android:drawableStart="@drawable/ic_edit"
             android:drawablePadding="12dp"
             android:elevation="4dp"
@@ -411,10 +411,32 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/containerInformacion" />
+
+        <!-- Botón Cambiar Contraseña - ACTUALIZADO -->
+        <Button
+            android:id="@+id/btnCambiarContrasena"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/button_secondary_background"
+            android:drawableStart="@drawable/ic_lock"
+            android:drawablePadding="12dp"
+            android:elevation="4dp"
+            android:minHeight="56dp"
+            android:padding="16dp"
+            android:text="Cambiar Contraseña"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnEditarPerfil" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

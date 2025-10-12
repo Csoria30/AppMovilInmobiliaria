@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,6 +92,11 @@ public class PerfilFragment extends Fragment {
                 // Está en modo vista - cambiar a edición
                 viewModel.cambiarModoEdicion();
             }
+        });
+
+        //Redirecciona a frag para cambiar pass
+        binding.btnCambiarContrasena.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_perfilFragment_to_cambiarContrasenaFragment);
         });
     }
 
