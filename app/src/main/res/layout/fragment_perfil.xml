@@ -8,466 +8,452 @@
     android:background="@drawable/login_gradient_background"
     tools:context=".ui.perfil.PerfilFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:layout_height="wrap_content">
 
-        <!-- Header del perfil -->
-        <LinearLayout
-            android:id="@+id/headerPerfil"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/card_background"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="32dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:padding="24dp">
 
-            <!-- Avatar del usuario -->
-            <ImageView
-                android:id="@+id/ivAvatar"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/avatar_background"
-                android:contentDescription="Avatar del usuario"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_person_avatar" />
-
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Header del perfil -->
+            <LinearLayout
+                android:id="@+id/headerPerfil"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/card_background"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="32dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <!-- Avatar del usuario -->
+                <ImageView
+                    android:id="@+id/ivAvatar"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/avatar_background"
+                    android:contentDescription="Avatar del usuario"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_person_avatar" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Mi Perfil"
+                    android:textColor="#2C3E50"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Información del perfil -->
+            <LinearLayout
+                android:id="@+id/containerInformacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/card_background"
+                android:orientation="vertical"
+                android:padding="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/headerPerfil">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:text="Información Personal"
+                    android:textColor="#2C3E50"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <!-- Campo DNI -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/input_background"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:contentDescription="DNI"
+                        android:src="@drawable/ic_id_card" />
+
+                    <TextView
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:text="DNI:"
+                        android:textColor="#7F8C8D"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <!-- TextView para modo vista -->
+                    <TextView
+                        android:id="@+id/tvDni"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:paddingEnd="16dp"
+                        android:text="12.345.678"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp" />
+
+                    <!-- EditText para modo edición -->
+                    <EditText
+                        android:id="@+id/etDni"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="center_vertical"
+                        android:inputType="number"
+                        android:paddingEnd="16dp"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <!-- Campo Nombre -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/input_background"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:contentDescription="Nombre"
+                        android:src="@drawable/ic_person_avatar" />
+
+                    <TextView
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre:"
+                        android:textColor="#7F8C8D"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <!-- TextView para modo vista -->
+                    <TextView
+                        android:id="@+id/tvNombre"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:paddingEnd="16dp"
+                        android:text="Juan"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp" />
+
+                    <!-- EditText para modo edición -->
+                    <EditText
+                        android:id="@+id/etNombre"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="center_vertical"
+                        android:inputType="textPersonName"
+                        android:paddingEnd="16dp"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <!-- Campo Apellido -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/input_background"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:contentDescription="Apellido"
+                        android:src="@drawable/ic_person_avatar" />
+
+                    <TextView
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:text="Apellido:"
+                        android:textColor="#7F8C8D"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <!-- TextView para modo vista -->
+                    <TextView
+                        android:id="@+id/tvApellido"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:paddingEnd="16dp"
+                        android:text="Pérez"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp" />
+
+                    <!-- EditText para modo edición -->
+                    <EditText
+                        android:id="@+id/etApellido"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="center_vertical"
+                        android:inputType="textPersonName"
+                        android:paddingEnd="16dp"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <!-- Campo Email -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/input_background"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:contentDescription="Email"
+                        android:src="@drawable/ic_email_native" />
+
+                    <TextView
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:text="Email:"
+                        android:textColor="#7F8C8D"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <!-- TextView para modo vista -->
+                    <TextView
+                        android:id="@+id/tvEmail"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:paddingEnd="16dp"
+                        android:text="correo@correo.com"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp" />
+
+                    <!-- EditText para modo edición -->
+                    <EditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="center_vertical"
+                        android:inputType="textEmailAddress"
+                        android:paddingEnd="16dp"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <!-- Campo Teléfono -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/input_background"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:contentDescription="Teléfono"
+                        android:src="@drawable/ic_phone" />
+
+                    <TextView
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:text="Teléfono:"
+                        android:textColor="#7F8C8D"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <!-- TextView para modo vista -->
+                    <TextView
+                        android:id="@+id/tvTelefono"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:paddingEnd="16dp"
+                        android:text="+54 266 123-4567"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp" />
+
+                    <!-- EditText para modo edición -->
+                    <EditText
+                        android:id="@+id/etTelefono"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="center_vertical"
+                        android:inputType="phone"
+                        android:paddingEnd="16dp"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Boton: Editar PErfil -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditarPerfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Mi Perfil"
-                android:textColor="#2C3E50"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:elevation="4dp"
+                android:minHeight="56dp"
+                android:padding="16dp"
+                android:text="Editar Perfil"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/primary"
+                app:cornerRadius="8dp"
+                app:icon="@drawable/ic_edit"
+                app:iconPadding="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/containerInformacion" />
 
-        </LinearLayout>
 
-        <!-- Información del perfil -->
-        <LinearLayout
-            android:id="@+id/containerInformacion"
+            <!-- Boton: Cancelar -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelar"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:minHeight="48dp"
+                android:padding="16dp"
+                android:text="Cancelar"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="normal"
+                android:visibility="gone"
+                app:backgroundTint="@color/danger"
+                app:cornerRadius="8dp"
+                app:icon="@drawable/ic_close"
+                app:iconPadding="8dp"
+                app:iconTint="@color/text_secondary"
+                app:rippleColor="@color/background_light"
+                app:strokeColor="@color/border_light"
+                app:strokeWidth="1dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnEditarPerfil" />
+
+            <!-- Boton: Cambioar PAss-->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCambiarContrasena"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="32dp"
+                android:elevation="4dp"
+                android:minHeight="56dp"
+                android:padding="16dp"
+                android:text="Cambiar Contraseña"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/secondary"
+                app:cornerRadius="8dp"
+                app:icon="@drawable/ic_lock"
+                app:iconPadding="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnCancelar" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Overlay de carga (Biblioteca de Google) -->
+        <FrameLayout
+            android:id="@+id/loadingOverlay"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/card_background"
-            android:orientation="vertical"
-            android:padding="24dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/headerPerfil">
+            android:layout_height="match_parent"
+            android:background="#80000000"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:indeterminateTint="#FFFFFF"
+                android:elevation="16dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Información Personal"
-                android:textColor="#2C3E50"
-                android:textSize="18sp"
+                android:layout_gravity="center"
+                android:layout_marginTop="80dp"
+                android:text="Cargando perfil..."
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <!-- Campo Código (SOLO LECTURA - NO EDITABLE) -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/input_background"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="4dp">
+        </FrameLayout>
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Código"
-                    android:src="@drawable/ic_id_card" />
-
-                <TextView
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:text="Código:"
-                    android:textColor="#7F8C8D"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvCodigo"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingEnd="16dp"
-                    android:text="001"
-                    android:textColor="#2C3E50"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
-
-            <!-- Campo DNI -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/input_background"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="4dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="DNI"
-                    android:src="@drawable/ic_id_card" />
-
-                <TextView
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:text="DNI:"
-                    android:textColor="#7F8C8D"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <!-- TextView para modo vista -->
-                <TextView
-                    android:id="@+id/tvDni"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingEnd="16dp"
-                    android:text="12.345.678"
-                    android:textColor="#2C3E50"
-                    android:textSize="16sp" />
-
-                <!-- EditText para modo edición -->
-                <EditText
-                    android:id="@+id/etDni"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:gravity="center_vertical"
-                    android:inputType="number"
-                    android:paddingEnd="16dp"
-                    android:textColor="#2C3E50"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-
-            </LinearLayout>
-
-            <!-- Campo Nombre -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/input_background"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="4dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Nombre"
-                    android:src="@drawable/ic_person_avatar" />
-
-                <TextView
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:text="Nombre:"
-                    android:textColor="#7F8C8D"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <!-- TextView para modo vista -->
-                <TextView
-                    android:id="@+id/tvNombre"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingEnd="16dp"
-                    android:text="Juan"
-                    android:textColor="#2C3E50"
-                    android:textSize="16sp" />
-
-                <!-- EditText para modo edición -->
-                <EditText
-                    android:id="@+id/etNombre"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:gravity="center_vertical"
-                    android:inputType="textPersonName"
-                    android:paddingEnd="16dp"
-                    android:textColor="#2C3E50"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-
-            </LinearLayout>
-
-            <!-- Campo Apellido -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/input_background"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="4dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Apellido"
-                    android:src="@drawable/ic_person_avatar" />
-
-                <TextView
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:text="Apellido:"
-                    android:textColor="#7F8C8D"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <!-- TextView para modo vista -->
-                <TextView
-                    android:id="@+id/tvApellido"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingEnd="16dp"
-                    android:text="Pérez"
-                    android:textColor="#2C3E50"
-                    android:textSize="16sp" />
-
-                <!-- EditText para modo edición -->
-                <EditText
-                    android:id="@+id/etApellido"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:gravity="center_vertical"
-                    android:inputType="textPersonName"
-                    android:paddingEnd="16dp"
-                    android:textColor="#2C3E50"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-
-            </LinearLayout>
-
-            <!-- Campo Email -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/input_background"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="4dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Email"
-                    android:src="@drawable/ic_email_native" />
-
-                <TextView
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:text="Email:"
-                    android:textColor="#7F8C8D"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <!-- TextView para modo vista -->
-                <TextView
-                    android:id="@+id/tvEmail"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingEnd="16dp"
-                    android:text="correo@correo.com"
-                    android:textColor="#2C3E50"
-                    android:textSize="16sp" />
-
-                <!-- EditText para modo edición -->
-                <EditText
-                    android:id="@+id/etEmail"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:gravity="center_vertical"
-                    android:inputType="textEmailAddress"
-                    android:paddingEnd="16dp"
-                    android:textColor="#2C3E50"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-
-            </LinearLayout>
-
-            <!-- Campo Teléfono -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/input_background"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="4dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Teléfono"
-                    android:src="@drawable/ic_phone" />
-
-                <TextView
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:text="Teléfono:"
-                    android:textColor="#7F8C8D"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <!-- TextView para modo vista -->
-                <TextView
-                    android:id="@+id/tvTelefono"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingEnd="16dp"
-                    android:text="+54 266 123-4567"
-                    android:textColor="#2C3E50"
-                    android:textSize="16sp" />
-
-                <!-- EditText para modo edición -->
-                <EditText
-                    android:id="@+id/etTelefono"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:gravity="center_vertical"
-                    android:inputType="phone"
-                    android:paddingEnd="16dp"
-                    android:textColor="#2C3E50"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-
-
-        <!-- Progress Bar -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
-            android:indeterminateTint="@color/white"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/btnEditarPerfil"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/containerInformacion" />
-
-        <!--Buton: Editar  -->
-        <Button
-            android:id="@+id/btnEditarPerfil"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/button_primary_background"
-            android:drawableStart="@drawable/ic_edit"
-            android:drawablePadding="12dp"
-            android:elevation="4dp"
-            android:minHeight="56dp"
-            android:padding="16dp"
-            android:text="Editar Perfil"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/containerInformacion" />
-
-        <!--Buton: Cancelar -->
-        <Button
-            android:id="@+id/btnCancelar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/button_cancel_background"
-            android:drawableStart="@drawable/ic_cancel"
-            android:drawablePadding="12dp"
-            android:elevation="2dp"
-            android:minHeight="48dp"
-            android:padding="12dp"
-            android:text="Cancelar"
-            android:textAllCaps="false"
-            android:textColor="#E74C3C"
-            android:textSize="14sp"
-            android:textStyle="normal"
-            android:gravity="center"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnEditarPerfil" />
-
-        <!--Buton: Cambiar contraseña -->
-        <Button
-            android:id="@+id/btnCambiarContrasena"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="32dp"
-            android:background="@drawable/button_secondary_background"
-            android:drawableStart="@drawable/ic_lock"
-            android:drawablePadding="12dp"
-            android:elevation="4dp"
-            android:minHeight="56dp"
-            android:padding="16dp"
-            android:text="Cambiar Contraseña"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnEditarPerfil" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 </ScrollView>

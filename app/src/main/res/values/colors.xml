@@ -18,11 +18,15 @@
     <color name="green_primary_dark">#229954</color>
     <color name="green_light">#2ECC71</color>
     <color name="green_pressed">#1E8449</color>
+    <color name="blue_icon">#3498DB</color>
 
     <!-- Colores de estado -->
     <color name="success">#198754</color>               <!-- Verde éxito -->
     <color name="warning">#ffc107</color>               <!-- Amarillo advertencia -->
     <color name="danger">#dc3545</color>                <!-- Rojo error -->
+    <color name="success_green">#4CAF50</color>
+    <color name="warning_orange">#FF9800</color>
+    <color name="error_red">#F44336</color>
 
     <!-- Colores de fondo y texto -->
     <color name="background_light">#f8f9fa</color>      <!-- Fondo claro -->

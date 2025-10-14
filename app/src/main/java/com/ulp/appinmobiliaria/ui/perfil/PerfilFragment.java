@@ -128,11 +128,13 @@ public class PerfilFragment extends Fragment {
 
     private void configurarCarga(boolean cargando) {
         // ProgressBar
-        binding.progressBar.setVisibility(cargando ? View.VISIBLE : View.GONE);
-
-        //Deshabilitar interacciones durante carga
-        binding.btnEditarPerfil.setEnabled(!cargando);
-        binding.btnCambiarContrasena.setEnabled(!cargando);
+        if (cargando) {
+            // Mostrar overlay completo
+            binding.loadingOverlay.setVisibility(View.VISIBLE);
+        } else {
+            // Ocultar overlay
+            binding.loadingOverlay.setVisibility(View.GONE);
+        }
     }
 
     private void configurarMensaje(UIStateHelper.FormUIState uiState) {
@@ -144,7 +146,7 @@ public class PerfilFragment extends Fragment {
     // Llenar campos usando getters seguros
     private void llenarCampos() {
         // TextViews (modo vista)
-        binding.tvCodigo.setText(viewModel.getCodigoPropietario());
+        //binding.tvCodigo.setText(viewModel.getCodigoPropietario());
         binding.tvDni.setText(viewModel.getDni());
         binding.tvNombre.setText(viewModel.getNombre());
         binding.tvApellido.setText(viewModel.getApellido());
