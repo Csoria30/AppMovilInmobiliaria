@@ -2,13 +2,17 @@ package com.ulp.appinmobiliaria.ui.perfil;
 
 import android.app.Application;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.ulp.appinmobiliaria.helpers.TokenHelper;
+import com.ulp.appinmobiliaria.helpers.ValidationHelper;
+import com.ulp.appinmobiliaria.helpers.UIStateHelper;
+import com.ulp.appinmobiliaria.helpers.ErrorHelper;
+import com.ulp.appinmobiliaria.helpers.UIStateHelper.FormUIState;
 import com.ulp.appinmobiliaria.model.PropietarioModel;
 import com.ulp.appinmobiliaria.request.ApiClient;
 
@@ -17,306 +21,115 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PerfilViewModel extends AndroidViewModel {
-    private MutableLiveData<PropietarioModel> mPropietario = new MutableLiveData<>();
-    private MutableLiveData<Boolean> mCargando = new MutableLiveData<>();
+
+    private MutableLiveData<PropietarioModel> mPropietario = new MutableLiveData<>(new PropietarioModel());
     private MutableLiveData<Boolean> mActualizacionExitosa = new MutableLiveData<>();
-    private MutableLiveData<Boolean> mModoEdicion = new MutableLiveData<>();
-    private MutableLiveData<String> mErrorValidacion = new MutableLiveData<>();
-    private MutableLiveData<String> mMensaje = new MutableLiveData<>();
+    private MutableLiveData<FormUIState> mUIState = new MutableLiveData<>();
 
     private PropietarioModel propietarioActual;
+    private boolean modoEdicionActual = false;
 
+    // ===== CONSTRUCTOR =====
     public PerfilViewModel(@NonNull Application application) {
         super(application);
+        mActualizacionExitosa.setValue(false);
+        actualizarUIState();
     }
 
-    // Getters para LiveData
+    // ===== GETTERS PARA LIVEDATA =====
     public LiveData<PropietarioModel> getmPropietario() {
         return mPropietario;
-    }
-
-    public LiveData<Boolean> getMCargando() {
-        return mCargando;
     }
 
     public LiveData<Boolean> getMActualizacionExitosa() {
         return mActualizacionExitosa;
     }
 
-    public LiveData<Boolean> getMModoEdicion() {
-        return mModoEdicion;
+    public LiveData<FormUIState> getUIState() {
+        return mUIState;
     }
 
-    public LiveData<String> getMErrorValidacion() {
-        return mErrorValidacion;
-    }
+    /**  ===== METODOS PÚBLICOS PRINCIPALES ===== */
 
-    public LiveData<String> getMMensaje() {
-        return mMensaje;
-    }
-
-
-    // Obtener Perfil
     public void obtenerPerfil() {
-        String token = ApiClient.leerToken(getApplication());
+        //progessBar cargando perfil
+        mUIState.setValue(UIStateHelper.PerfilUIStates.cargandoPerfil());
 
-        if (!validarToken(token)) {
+        TokenHelper.ResultadoValidacion validacion = TokenHelper.validarToken(getApplication());
+
+        if (!validacion.esValido) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.error(validacion.mensajeError));
             return;
         }
 
-        mCargando.setValue(true);
-
         ApiClient.InmobiliariaService api = ApiClient.getApiInmobiliaria();
-        Call<PropietarioModel> call = api.obtenerPerfil("Bearer " + token); //Importante el espacio despues de Bearer
+        Call<PropietarioModel> call = api.obtenerPerfil(validacion.tokenBearer);
 
         call.enqueue(new Callback<PropietarioModel>() {
             @Override
             public void onResponse(Call<PropietarioModel> call, Response<PropietarioModel> response) {
-                mCargando.setValue(false);
-
                 if (response.isSuccessful() && response.body() != null) {
                     propietarioActual = response.body();
                     mPropietario.setValue(propietarioActual);
+                    mUIState.setValue(UIStateHelper.PerfilUIStates.modoVista(false));
                     Log.d("PerfilViewModel", "Perfil obtenido: " + propietarioActual.getNombre());
                 } else {
-                    Log.e("PerfilViewModel", "Error en respuesta: " + response.code() + " - " + response.message());
-                    mMensaje.setValue("Error al obtener el perfil: " + response.code());
+                    Log.e("PerfilViewModel", "Error en respuesta: " + response.code());
+                    String mensaje = ErrorHelper.obtenerMensajeError(response.code());
+                    mUIState.setValue(UIStateHelper.PerfilUIStates.error(mensaje));
                 }
             }
 
             @Override
             public void onFailure(Call<PropietarioModel> call, Throwable t) {
-                mCargando.setValue(false);
+                String mensaje = ErrorHelper.obtenerMensajeConexion(t);
+                mUIState.setValue(UIStateHelper.PerfilUIStates.error(mensaje));
                 Log.e("PerfilViewModel", "Error de conexión: " + t.getMessage());
-                mMensaje.setValue("Error de conexión: " + t.getMessage());
             }
         });
     }
 
-    // Lógica para cambiar modo de edición
-    public void cambiarModoEdicion() {
-        Boolean modoActual = mModoEdicion.getValue();
-        boolean esModoEdicion = modoActual != null && modoActual;
-        boolean nuevoModo = !esModoEdicion;
-
-        mModoEdicion.setValue(nuevoModo);
-
-        if (nuevoModo) {
-            Log.d("PerfilViewModel", "Activando modo edición");
+    /** Si esta en modo edicion, guarda cambios | si no pasa a modo edicion */
+    public void manejarAccionBotonPrincipal(String dni, String nombre, String apellido, String email, String telefono) {
+        if (modoEdicionActual) {
+            guardarCambios(dni, nombre, apellido, email, telefono);
         } else {
-            Log.d("PerfilViewModel", "Activando modo vista");
-            // Limpiar errores al salir del modo edición
-            mErrorValidacion.setValue(null);
+            cambiarModoEdicion();
         }
     }
 
-    // Guardar cambios con validaciones
+    public void cambiarModoEdicion() {
+        modoEdicionActual = !modoEdicionActual;
+        actualizarUIState();
+        Log.d("PerfilViewModel", modoEdicionActual ? "Activando modo edición" : "Activando modo vista");
+    }
+
+    public void cancelarEdicion() {
+        if (modoEdicionActual) {
+            modoEdicionActual = false;
+            actualizarUIState();
+            Log.d("PerfilViewModel", "Cancelando edición");
+        }
+    }
+
     public void guardarCambios(String dni, String nombre, String apellido, String email, String telefono) {
-        // Validar todos los campos
-        if (!validarCampos(dni, nombre, apellido, email, telefono)) {
+        if (!validarCamposConHelpers(dni, nombre, apellido, email, telefono)) {
             return;
         }
 
-        // Crear propietario actualizado
         PropietarioModel propietarioActualizado = crearPropietarioActualizado(dni, nombre, apellido, email, telefono);
+        if (propietarioActualizado == null) {
+            return;
+        }
 
-        // Enviar actualización
         actualizarPerfil(propietarioActualizado);
     }
 
-    // Validaciones
-    private boolean validarToken(String token) {
-        if (token == null || token.isEmpty()) {
-            mMensaje.setValue("Token no encontrado. Inicie sesión nuevamente.");
-            return false;
-        }
-        return true;
-    }
+    /** ===== GETTERS PARA DATOS DEL PROPIETARIO =====
+     *  Nota: Evitamos retornos nulos
+     * */
 
-    private boolean validarCampos(String dni, String nombre, String apellido, String email, String telefono) {
-        // Validar nombre
-        if (!validarCampoNoVacio(nombre, "nombre")) {
-            mErrorValidacion.setValue("El nombre es obligatorio");
-            return false;
-        }
-        if (!validarLongitudMinima(nombre, 2, "nombre")) {
-            mErrorValidacion.setValue("El nombre debe tener al menos 2 caracteres");
-            return false;
-        }
-
-        // Validar apellido
-        if (!validarCampoNoVacio(apellido, "apellido")) {
-            mErrorValidacion.setValue("El apellido es obligatorio");
-            return false;
-        }
-        if (!validarLongitudMinima(apellido, 2, "apellido")) {
-            mErrorValidacion.setValue("El apellido debe tener al menos 2 caracteres");
-            return false;
-        }
-
-        // Validar DNI
-        if (!validarCampoNoVacio(dni, "DNI")) {
-            mErrorValidacion.setValue("El DNI es obligatorio");
-            return false;
-        }
-        if (!validarDNI(dni)) {
-            mErrorValidacion.setValue("El DNI debe tener entre 7 y 8 dígitos");
-            return false;
-        }
-
-        // Validar email
-        if (!validarCampoNoVacio(email, "email")) {
-            mErrorValidacion.setValue("El email es obligatorio");
-            return false;
-        }
-        if (!validarFormatoEmail(email)) {
-            mErrorValidacion.setValue("El formato del email no es válido");
-            return false;
-        }
-
-        // Validar teléfono
-        if (!validarCampoNoVacio(telefono, "teléfono")) {
-            mErrorValidacion.setValue("El teléfono es obligatorio");
-            return false;
-        }
-        if (!validarTelefono(telefono)) {
-            mErrorValidacion.setValue("El teléfono debe tener al menos 8 dígitos");
-            return false;
-        }
-
-        // Limpiar errores si todo está correcto
-        mErrorValidacion.setValue(null);
-        return true;
-    }
-
-    private boolean validarCampoNoVacio(String campo, String nombreCampo) {
-        boolean esValido = campo != null && !campo.trim().isEmpty();
-        if (!esValido) {
-            Log.w("PerfilViewModel", "Campo " + nombreCampo + " está vacío");
-        }
-        return esValido;
-    }
-
-    private boolean validarLongitudMinima(String campo, int longitudMinima, String nombreCampo) {
-        boolean esValido = campo != null && campo.trim().length() >= longitudMinima;
-        if (!esValido) {
-            Log.w("PerfilViewModel", "Campo " + nombreCampo + " no cumple longitud mínima: " + longitudMinima);
-        }
-        return esValido;
-    }
-
-    private boolean validarDNI(String dni) {
-        // Remover puntos, espacios y guiones para validar solo números
-        String dniLimpio = dni.replaceAll("[^0-9]", "");
-        boolean esValido = dniLimpio.length() >= 7 && dniLimpio.length() <= 8;
-        if (!esValido) {
-            Log.w("PerfilViewModel", "DNI inválido: " + dni + " (limpio: " + dniLimpio + ")");
-        }
-        return esValido;
-    }
-
-    private boolean validarFormatoEmail(String email) {
-        boolean esValido = email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
-        if (!esValido) {
-            Log.w("PerfilViewModel", "Email con formato inválido: " + email);
-        }
-        return esValido;
-    }
-
-    private boolean validarTelefono(String telefono) {
-        // Remover espacios, guiones y paréntesis para validar solo números
-        String telefonoLimpio = telefono.replaceAll("[^0-9]", "");
-        boolean esValido = telefonoLimpio.length() >= 8;
-        if (!esValido) {
-            Log.w("PerfilViewModel", "Teléfono inválido: " + telefono + " (limpio: " + telefonoLimpio + ")");
-        }
-        return esValido;
-    }
-
-    // Lógica para crear propietario actualizado
-    // Actualizar el método crearPropietarioActualizado en PerfilViewModel
-    private PropietarioModel crearPropietarioActualizado(String dni, String nombre, String apellido, String email, String telefono) {
-        if (propietarioActual == null) {
-            Log.e("PerfilViewModel", "Error: propietarioActual es null");
-            mMensaje.setValue("Error: No se pudo obtener los datos actuales del propietario");
-            return null;
-        }
-
-        PropietarioModel propietarioActualizado = new PropietarioModel();
-        propietarioActualizado.setIdPropietario(propietarioActual.getIdPropietario());
-        propietarioActualizado.setDni(dni.trim());
-        propietarioActualizado.setNombre(nombre.trim());
-        propietarioActualizado.setApellido(apellido.trim());
-        propietarioActualizado.setEmail(email.trim());
-        propietarioActualizado.setTelefono(telefono.trim());
-
-        // Preservar la contraseña actual
-        propietarioActualizado.setClave(propietarioActual.getClave());
-
-        return propietarioActualizado;
-    }
-
-    // Lógica para actualizar perfil en la API
-    private void actualizarPerfil(PropietarioModel propietario) {
-        String token = ApiClient.leerToken(getApplication());
-
-        if (!validarToken(token)) {
-            return;
-        }
-
-        if (propietario == null) {
-            mMensaje.setValue("Error: Datos del propietario inválidos");
-            return;
-        }
-
-        if (propietario.getClave() == null || propietario.getClave().isEmpty()) {
-            mMensaje.setValue("Error: No se pudo conservar la contraseña actual");
-            return;
-        }
-
-        mCargando.setValue(true);
-
-        ApiClient.InmobiliariaService api = ApiClient.getApiInmobiliaria();
-        Call<PropietarioModel> call = api.actualizarPerfil("Bearer " + token, propietario);
-
-        call.enqueue(new Callback<PropietarioModel>() {
-            @Override
-            public void onResponse(Call<PropietarioModel> call, Response<PropietarioModel> response) {
-                mCargando.setValue(false);
-
-                if (response.isSuccessful() && response.body() != null) {
-                    Log.d("PerfilViewModel", "Perfil actualizado correctamente");
-                    propietarioActual = response.body();
-                    mPropietario.setValue(propietarioActual);
-                    mActualizacionExitosa.setValue(true);
-                    mMensaje.setValue("Perfil actualizado correctamente");
-                    cambiarModoEdicion();
-                } else {
-                    Log.e("PerfilViewModel", "Error al actualizar: " + response.code() + " - " + response.message());
-                    mMensaje.setValue("Error al actualizar el perfil: " + response.code());
-                    mActualizacionExitosa.setValue(false);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<PropietarioModel> call, Throwable t) {
-                mCargando.setValue(false);
-                Log.e("PerfilViewModel", "Error de conexión: " + t.getMessage());
-                mMensaje.setValue("Error de conexión: " + t.getMessage());
-                mActualizacionExitosa.setValue(false);
-            }
-        });
-    }
-
-    // Método para cancelar edición
-    public void cancelarEdicion() {
-        Log.d("PerfilViewModel", "Cancelando edición");
-        mErrorValidacion.setValue(null);
-        cambiarModoEdicion();
-    }
-
-    // Getters para datos del propietario actual (para el Fragment)
-    public String getCodigoPropietario() {
+     public String getCodigoPropietario() {
         return propietarioActual != null ? String.valueOf(propietarioActual.getIdPropietario()) : "";
     }
 
@@ -338,5 +151,145 @@ public class PerfilViewModel extends AndroidViewModel {
 
     public String getTelefono() {
         return propietarioActual != null ? propietarioActual.getTelefono() : "";
+    }
+
+    /** =====  VALIDACIONES ===== */
+    private boolean validarCamposConHelpers(String dni, String nombre, String apellido, String email, String telefono) {
+        // Helper Validacion: nombre
+        if (!ValidationHelper.esCampoValido(nombre)) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El nombre es obligatorio"));
+            return false;
+        }
+
+        if (nombre.trim().length() < 2) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
+                    "El nombre debe tener al menos 2 caracteres"
+            ));
+            return false;
+        }
+
+        // Helper Validacion: apellido
+        if (!ValidationHelper.esCampoValido(apellido)) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El apellido es obligatorio"));
+            return false;
+        }
+        if (apellido.trim().length() < 2) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
+                    "El apellido debe tener al menos 2 caracteres"
+            ));
+            return false;
+        }
+
+        // Helper Validacion: Dni
+        if (!ValidationHelper.esDniValido(dni)) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
+                    "El DNI debe tener entre 7 y 8 dígitos"
+            ));
+            return false;
+        }
+
+        // Helper Validacion: Email
+        if (!ValidationHelper.esEmailValido(email)) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
+                    "El formato del email no es válido"
+            ));
+            return false;
+        }
+
+        // Helper Validacion: telefono
+        if (!ValidationHelper.esTelefonoValido(telefono)) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
+                    "El teléfono debe tener entre 8 y 15 dígitos"
+            ));
+            return false;
+        }
+
+        // Validacion OK - volver al modo edición normal
+        actualizarUIState();
+        return true;
+    }
+
+    // ===== MÉTODOS PRIVADOS - UTILIDADES =====
+    private void actualizarUIState() {
+        if (modoEdicionActual) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.modoEdicion(false));
+        } else {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.modoVista(false));
+        }
+    }
+
+    private PropietarioModel crearPropietarioActualizado(String dni, String nombre, String apellido, String email, String telefono) {
+        if (propietarioActual == null) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
+                    "Error: No se pudo obtener los datos actuales del propietario"
+            ));
+            return null;
+        }
+
+        PropietarioModel propietarioActualizado = new PropietarioModel();
+        propietarioActualizado.setIdPropietario(propietarioActual.getIdPropietario());
+        propietarioActualizado.setDni(dni.trim());
+        propietarioActualizado.setNombre(nombre.trim());
+        propietarioActualizado.setApellido(apellido.trim());
+        propietarioActualizado.setEmail(email.trim());
+        propietarioActualizado.setTelefono(telefono.trim());
+
+        // Contraseña null - para evitar doble Hash
+        propietarioActualizado.setClave(null);
+        return propietarioActualizado;
+    }
+
+    /**  ===== METODOS PRIVADOS  ===== */
+    private void actualizarPerfil(PropietarioModel propietario) {
+        TokenHelper.ResultadoValidacion validacion = TokenHelper.validarToken(getApplication());
+
+        if (!validacion.esValido) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.error(validacion.mensajeError));
+            return;
+        }
+
+        if (propietario == null) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
+                    "Error: Datos del propietario inválidos"
+            ));
+            return;
+        }
+
+        mUIState.setValue(UIStateHelper.PerfilUIStates.guardandoCambios());
+
+        ApiClient.InmobiliariaService api = ApiClient.getApiInmobiliaria();
+        Call<PropietarioModel> call = api.actualizarPerfil(validacion.tokenBearer, propietario);
+
+        call.enqueue(new Callback<PropietarioModel>() {
+            @Override
+            public void onResponse(Call<PropietarioModel> call, Response<PropietarioModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    propietarioActual = response.body();
+                    mPropietario.setValue(propietarioActual);
+                    mActualizacionExitosa.setValue(true);
+
+                    // Cambiar a modo vista con éxito
+                    modoEdicionActual = false;
+                    mUIState.setValue(UIStateHelper.PerfilUIStates.exitoGuardado());
+                } else {
+                    Log.e("PerfilViewModel", "Error al actualizar: " + response.code());
+                    String mensaje = ErrorHelper.obtenerMensajeError(response.code());
+                    mUIState.setValue(UIStateHelper.PerfilUIStates.error(mensaje));
+                    mActualizacionExitosa.setValue(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PropietarioModel> call, Throwable t) {
+                String mensaje = ErrorHelper.obtenerMensajeConexion(t);
+                mUIState.setValue(UIStateHelper.PerfilUIStates.error(mensaje));
+                mActualizacionExitosa.setValue(false);
+                Log.e("PerfilViewModel", "Error de conexión: " + t.getMessage());
+            }
+        });
+    }
+
+    public void limpiarMensajeExito() {
+        mActualizacionExitosa.setValue(false);
     }
 }

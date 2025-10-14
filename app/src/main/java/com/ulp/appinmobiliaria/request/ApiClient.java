@@ -49,6 +49,23 @@ public class ApiClient {
         return sp.getString("token", null);
     }
 
+    public static boolean eliminarToken(Context context) {
+        try {
+            SharedPreferences sp = context.getSharedPreferences("token.xml", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sp.edit();
+
+            editor.remove("token");
+            editor.apply();
+
+            Log.d("ApiClient", "Token eliminado correctamente");
+            return true; // Asumir éxito con apply()
+
+        } catch (Exception e) {
+            Log.e("ApiClient", "Excepción al eliminar token: " + e.getMessage());
+            return false;
+        }
+    }
+
 
     public interface InmobiliariaService{
         @FormUrlEncoded
@@ -62,5 +79,14 @@ public class ApiClient {
         //Actualizar Perfil
         @PUT("api/Propietarios/actualizar")
         Call<PropietarioModel> actualizarPerfil(@Header("Authorization") String token, @Body PropietarioModel propietario);
+
+        //Cambiar Contraseña
+        @FormUrlEncoded
+        @PUT("api/Propietarios/changePassword")
+        Call<Void> cambiarContrasena(
+                @Header("Authorization") String token,
+                @Field("currentPassword") String currentPassword,
+                @Field("newPassword") String newPassword
+        );
     }
 }

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.ulp.appinmobiliaria.R;
 import com.ulp.appinmobiliaria.databinding.FragmentPerfilBinding;
+import com.ulp.appinmobiliaria.helpers.UIStateHelper;
 import com.ulp.appinmobiliaria.model.PropietarioModel;
 
 public class PerfilFragment extends Fragment {
@@ -42,56 +43,39 @@ public class PerfilFragment extends Fragment {
         return binding.getRoot();
     }
 
+
     private void configurarObservers() {
-        // Observer para datos del propietario
+        viewModel.getUIState().observe(getViewLifecycleOwner(), uiState -> {
+            actualizarUI(uiState);
+        });
+
         viewModel.getmPropietario().observe(getViewLifecycleOwner(), propietario -> {
-            actualizarUI(propietario);
+            llenarCampos();
         });
 
-        // Observer para modo de edición
-        viewModel.getMModoEdicion().observe(getViewLifecycleOwner(), modoEdicion -> {
-            actualizarModoUI(modoEdicion);
+        // Observer para éxito
+        /*
+        viewModel.getMActualizacionExitosa().observe(getViewLifecycleOwner(), exitoso -> {
+            Toast.makeText(getContext(), "✅ Perfil actualizado correctamente", Toast.LENGTH_SHORT).show();
         });
-
-        // Observer para estado de carga
-        viewModel.getMCargando().observe(getViewLifecycleOwner(), cargando -> {
-            binding.progressBar.setVisibility(cargando ? View.VISIBLE : View.GONE);
-            binding.btnEditarPerfil.setEnabled(!cargando);
-        });
-
-        // Observer para errores de validación
-        viewModel.getMErrorValidacion().observe(getViewLifecycleOwner(), error -> {
-            if (error != null && !error.isEmpty()) {
-                mostrarErrorValidacion(error);
-            } else {
-                limpiarErrores();
-            }
-        });
-
-        // Observer para mensajes
-        viewModel.getMMensaje().observe(getViewLifecycleOwner(), mensaje -> {
-            if (mensaje != null && !mensaje.isEmpty()) {
-                Toast.makeText(getContext(), mensaje, Toast.LENGTH_SHORT).show();
-            }
-        });
+        */
     }
 
     private void configurarEventos() {
         binding.btnEditarPerfil.setOnClickListener(v -> {
-            Boolean modoEdicion = viewModel.getMModoEdicion().getValue();
-            if (modoEdicion != null && modoEdicion) {
-                // Está en modo edición - guardar cambios
-                String dni = binding.etDni.getText().toString();
-                String nombre = binding.etNombre.getText().toString();
-                String apellido = binding.etApellido.getText().toString();
-                String email = binding.etEmail.getText().toString();
-                String telefono = binding.etTelefono.getText().toString();
+            String dni = binding.etDni.getText().toString();
+            String nombre = binding.etNombre.getText().toString();
+            String apellido = binding.etApellido.getText().toString();
+            String email = binding.etEmail.getText().toString();
+            String telefono = binding.etTelefono.getText().toString();
 
-                viewModel.guardarCambios(dni, nombre, apellido, email, telefono);
-            } else {
-                // Está en modo vista - cambiar a edición
-                viewModel.cambiarModoEdicion();
-            }
+            // ViewModel maneja todo
+            viewModel.manejarAccionBotonPrincipal(dni, nombre, apellido, email, telefono);
+        });
+
+        // Botón cancelar
+        binding.btnCancelar.setOnClickListener(v -> {
+            viewModel.cancelarEdicion();
         });
 
         //Redirecciona a frag para cambiar pass
@@ -100,32 +84,79 @@ public class PerfilFragment extends Fragment {
         });
     }
 
-    private void actualizarUI(PropietarioModel propietario) {
-        binding.tvCodigo.setText(String.valueOf(propietario.getIdPropietario()));
-        binding.tvDni.setText(propietario.getDni());
-        binding.tvNombre.setText(propietario.getNombre());
-        binding.tvApellido.setText(propietario.getApellido());
-        binding.tvEmail.setText(propietario.getEmail());
-        binding.tvTelefono.setText(propietario.getTelefono());
-
-        // Actualizar también los EditText si están visibles
-        binding.etDni.setText(propietario.getDni());
-        binding.etNombre.setText(propietario.getNombre());
-        binding.etApellido.setText(propietario.getApellido());
-        binding.etEmail.setText(propietario.getEmail());
-        binding.etTelefono.setText(propietario.getTelefono());
+    /** Manejar IU principal*/
+    private void actualizarUI(UIStateHelper.FormUIState uiState) {
+        configurarCampos(uiState.mostrarCamposEditables);
+        configurarBotonPrincipal(uiState);
+        configurarBotonSecundario(uiState);
+        configurarBotonCancelar(uiState);
+        configurarCarga(uiState.cargando);
+        configurarMensaje(uiState);
+        llenarCampos();
     }
 
-    private void actualizarModoUI(boolean modoEdicion) {
+    private void configurarCampos(boolean modoEdicion) {
         if (modoEdicion) {
-            // Cambiar a modo edición
             mostrarCamposEditables();
-            cambiarBotonAGuardar();
         } else {
-            // Cambiar a modo vista
             mostrarCamposVisualizacion();
-            cambiarBotonAEditar();
         }
+    }
+
+    private void configurarBotonPrincipal(UIStateHelper.FormUIState uiState) {
+        binding.btnEditarPerfil.setText(uiState.textoBoton);
+        binding.btnEditarPerfil.setEnabled(uiState.botonHabilitado);
+
+        binding.btnEditarPerfil.setCompoundDrawablesWithIntrinsicBounds(
+                ContextCompat.getDrawable(getContext(), uiState.iconoBoton),
+                null, null, null
+        );
+    }
+
+    private void configurarBotonSecundario(UIStateHelper.FormUIState uiState) {
+        binding.btnCambiarContrasena.setVisibility(
+                uiState.mostrarBotonSecundario ? View.VISIBLE : View.GONE
+        );
+        binding.btnCambiarContrasena.setEnabled(uiState.habilitarBotonSecundario);
+    }
+
+    private void configurarBotonCancelar(UIStateHelper.FormUIState uiState) {
+        binding.btnCancelar.setVisibility(
+                uiState.mostrarBotonCancelar ? View.VISIBLE : View.GONE
+        );
+    }
+
+    private void configurarCarga(boolean cargando) {
+        // ProgressBar
+        binding.progressBar.setVisibility(cargando ? View.VISIBLE : View.GONE);
+
+        //Deshabilitar interacciones durante carga
+        binding.btnEditarPerfil.setEnabled(!cargando);
+        binding.btnCambiarContrasena.setEnabled(!cargando);
+    }
+
+    private void configurarMensaje(UIStateHelper.FormUIState uiState) {
+        if (uiState.mostrarMensaje && uiState.mensaje != null && !uiState.mensaje.isEmpty()) {
+            Toast.makeText(getContext(), uiState.mensaje, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    // Llenar campos usando getters seguros
+    private void llenarCampos() {
+        // TextViews (modo vista)
+        binding.tvCodigo.setText(viewModel.getCodigoPropietario());
+        binding.tvDni.setText(viewModel.getDni());
+        binding.tvNombre.setText(viewModel.getNombre());
+        binding.tvApellido.setText(viewModel.getApellido());
+        binding.tvEmail.setText(viewModel.getEmail());
+        binding.tvTelefono.setText(viewModel.getTelefono());
+
+        // EditTexts (modo edición)
+        binding.etDni.setText(viewModel.getDni());
+        binding.etNombre.setText(viewModel.getNombre());
+        binding.etApellido.setText(viewModel.getApellido());
+        binding.etEmail.setText(viewModel.getEmail());
+        binding.etTelefono.setText(viewModel.getTelefono());
     }
 
     private void mostrarCamposEditables() {
@@ -158,22 +189,8 @@ public class PerfilFragment extends Fragment {
         binding.etApellido.setVisibility(View.GONE);
         binding.etEmail.setVisibility(View.GONE);
         binding.etTelefono.setVisibility(View.GONE);
-    }
 
-    private void cambiarBotonAGuardar() {
-        binding.btnEditarPerfil.setText("Guardar Cambios");
-        binding.btnEditarPerfil.setCompoundDrawablesWithIntrinsicBounds(
-                ContextCompat.getDrawable(getContext(), R.drawable.ic_save), null, null, null);
-    }
-
-    private void cambiarBotonAEditar() {
-        binding.btnEditarPerfil.setText("Editar Perfil");
-        binding.btnEditarPerfil.setCompoundDrawablesWithIntrinsicBounds(
-                ContextCompat.getDrawable(getContext(), R.drawable.ic_edit), null, null, null);
-    }
-
-    private void mostrarErrorValidacion(String error) {
-        Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+        limpiarErrores();
     }
 
     private void limpiarErrores() {
