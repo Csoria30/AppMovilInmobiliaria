@@ -18,12 +18,16 @@ import retrofit2.Call;
 public class LogoutViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> mLogoutExitoso = new MutableLiveData<>();
     private MutableLiveData<String> mMensaje = new MutableLiveData<>();
+    private MutableLiveData<Boolean> mMostrarDialogo = new MutableLiveData<>();
     private Context context;
 
+    /** === Constructor === */
     public LogoutViewModel(@NonNull Application application) {
         super(application);
         context = getApplication();
     }
+
+    /** === Getters LiveData === */
 
     public LiveData<Boolean> getLogoutExitoso() {
         return mLogoutExitoso;
@@ -33,37 +37,38 @@ public class LogoutViewModel extends AndroidViewModel {
         return mMensaje;
     }
 
-    public void realizarLogout() {
-        try {
-            // ✅ NUEVO: Usar TokenHelper para verificar sesión activa
-            if (!TokenHelper.tieneSesionActiva(context)) {
-                mMensaje.setValue("No hay sesión activa");
+    public LiveData<Boolean> getMostrarDialogo() {
+        return mMostrarDialogo;
+    }
+
+    /** === Logica === */
+    public void inicializar(){
+        try{
+            if(TokenHelper.tieneSesionActiva(context)){
+                mMostrarDialogo.setValue(true);
+            }else{
+                mMensaje.setValue("No hay session activa");
                 mLogoutExitoso.setValue(true);
-                return;
             }
-
-            // ✅ NUEVO: Usar TokenHelper para limpiar sesión completa
-            boolean sesionLimpiada = TokenHelper.limpiarSesion(context);
-
-            if (sesionLimpiada) {
-                mMensaje.setValue("Sesión cerrada exitosamente");
-                mLogoutExitoso.setValue(true);
-            } else {
-                mMensaje.setValue("Error al cerrar sesión. Intente nuevamente.");
-                mLogoutExitoso.setValue(false);
-            }
-
-        } catch (Exception e) {
-            mMensaje.setValue("Error inesperado al cerrar sesión");
+        }catch (Exception e){
+            mMensaje.setValue("Error al verificar Session");
             mLogoutExitoso.setValue(false);
         }
     }
 
-    public boolean tieneTokenActivo() {
-        try {
-            return TokenHelper.tieneSesionActiva(context);
+    public void realizarLogout(){
+        try{
+            boolean sesionLimpiada = TokenHelper.limpiarSesion(context);
+
+            if(sesionLimpiada){
+                mMensaje.setValue("Sesión cerrada exitosamente");
+                mLogoutExitoso.setValue(true);
+            }else{
+                mMensaje.setValue("Error al cerrar sesión");
+                mLogoutExitoso.setValue(false);
+            }
         } catch (Exception e) {
-            return false;
+            throw new RuntimeException(e);
         }
     }
 }
