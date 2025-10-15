@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.ulp.appinmobiliaria.helpers.TokenHelper;
 import com.ulp.appinmobiliaria.request.ApiClient;
 
 import retrofit2.Call;
@@ -58,7 +59,7 @@ public class LoginViewModel extends AndroidViewModel {
             public void onResponse(Call<String> call, Response<String> response) {
                 if(response.isSuccessful()){
                     String token = response.body();
-                    ApiClient.guardarToken(context, token);
+                    TokenHelper.guardarToken(context, token);
                     loginExitoso.setValue(true);
 
                 }else{

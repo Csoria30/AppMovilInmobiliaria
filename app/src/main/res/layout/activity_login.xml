@@ -123,7 +123,7 @@
                     android:layout_height="24dp"
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="12dp"
-                    android:src="@drawable/ic_lock_native"
+                    android:src="@drawable/ic_lock_blue"
                     android:contentDescription="Password" />
 
                 <EditText

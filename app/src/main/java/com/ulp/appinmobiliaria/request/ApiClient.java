@@ -1,9 +1,5 @@
 package com.ulp.appinmobiliaria.request;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ulp.appinmobiliaria.model.PropietarioModel;
@@ -22,7 +18,7 @@ import retrofit2.http.PUT;
 public class ApiClient {
     public static final String URLBASE = "https://inmobiliariaulp-amb5hwfqaraweyga.canadacentral-01.azurewebsites.net/";
 
-    //Retrofit
+    // ✅ SOLO configuración de Retrofit
     public static InmobiliariaService getApiInmobiliaria(){
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -30,57 +26,24 @@ public class ApiClient {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(URLBASE)
-                //.addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
         return retrofit.create(InmobiliariaService.class);
     }
 
-    public static void guardarToken(Context context, String token) {
-        SharedPreferences sp = context.getSharedPreferences("token.xml", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString("token", token);
-        editor.apply();
-    }
-
-    public static String leerToken(Context context) {
-        SharedPreferences sp = context.getSharedPreferences("token.xml", Context.MODE_PRIVATE);
-        return sp.getString("token", null);
-    }
-
-    public static boolean eliminarToken(Context context) {
-        try {
-            SharedPreferences sp = context.getSharedPreferences("token.xml", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sp.edit();
-
-            editor.remove("token");
-            editor.apply();
-
-            Log.d("ApiClient", "Token eliminado correctamente");
-            return true; // Asumir éxito con apply()
-
-        } catch (Exception e) {
-            Log.e("ApiClient", "Excepción al eliminar token: " + e.getMessage());
-            return false;
-        }
-    }
-
-
+    // ✅ SOLO interface de servicios
     public interface InmobiliariaService{
         @FormUrlEncoded
         @POST("api/Propietarios/login")
         Call<String> login(@Field("Usuario") String u, @Field("Clave") String c);
 
-        //Obtener perfil
         @GET("api/propietarios")
         Call<PropietarioModel> obtenerPerfil(@Header("Authorization") String token);
 
-        //Actualizar Perfil
         @PUT("api/Propietarios/actualizar")
         Call<PropietarioModel> actualizarPerfil(@Header("Authorization") String token, @Body PropietarioModel propietario);
 
-        //Cambiar Contraseña
         @FormUrlEncoded
         @PUT("api/Propietarios/changePassword")
         Call<Void> cambiarContrasena(

@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.ulp.appinmobiliaria.helpers.TokenHelper;
 import com.ulp.appinmobiliaria.model.PropietarioModel;
 import com.ulp.appinmobiliaria.request.ApiClient;
 
@@ -84,7 +85,7 @@ public class CambiarContrasenaViewModel extends AndroidViewModel {
     }
 
     private void obtenerPerfilYActualizarContrasena(String contrasenaActual, String contrasenaNueva) {
-        String token = ApiClient.leerToken(getApplication());
+        String token = TokenHelper.obtenerToken(getApplication());
 
         if (token == null || token.isEmpty()) {
             mMensaje.setValue("Token no encontrado. Inicie sesión nuevamente.");
@@ -136,7 +137,7 @@ public class CambiarContrasenaViewModel extends AndroidViewModel {
         propietarioActualizado.setTelefono(propietario.getTelefono());
         propietarioActualizado.setClave(contrasenaNueva); // Cambiar Solo el Password
 
-        String token = ApiClient.leerToken(getApplication());
+        String token = TokenHelper.obtenerToken(getApplication());
         ApiClient.InmobiliariaService api = ApiClient.getApiInmobiliaria();
         Call<PropietarioModel> call = api.actualizarPerfil("Bearer " + token, propietarioActualizado);
 

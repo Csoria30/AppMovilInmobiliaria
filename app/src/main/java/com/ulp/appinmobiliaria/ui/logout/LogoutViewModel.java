@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.ulp.appinmobiliaria.helpers.TokenHelper;
 import com.ulp.appinmobiliaria.request.ApiClient;
 
 import retrofit2.Call;
@@ -34,38 +35,35 @@ public class LogoutViewModel extends AndroidViewModel {
 
     public void realizarLogout() {
         try {
-            // Verificar si existe token
-            String token = ApiClient.leerToken(context);
-
-            if (token == null || token.isEmpty()) {
-                Log.d("LogoutViewModel", "No hay token para eliminar");
+            // ✅ NUEVO: Usar TokenHelper para verificar sesión activa
+            if (!TokenHelper.tieneSesionActiva(context)) {
                 mMensaje.setValue("No hay sesión activa");
                 mLogoutExitoso.setValue(true);
                 return;
             }
 
-            // Eliminar token usando la función de ApiClient
-            boolean eliminado = ApiClient.eliminarToken(context);
+            // ✅ NUEVO: Usar TokenHelper para limpiar sesión completa
+            boolean sesionLimpiada = TokenHelper.limpiarSesion(context);
 
-            if (eliminado) {
-                Log.d("LogoutViewModel", "Token eliminado correctamente");
-                mMensaje.setValue("Sesión cerrada correctamente");
+            if (sesionLimpiada) {
+                mMensaje.setValue("Sesión cerrada exitosamente");
                 mLogoutExitoso.setValue(true);
             } else {
-                Log.e("LogoutViewModel", "Error al eliminar token");
-                mMensaje.setValue("Error al cerrar sesión");
+                mMensaje.setValue("Error al cerrar sesión. Intente nuevamente.");
                 mLogoutExitoso.setValue(false);
             }
 
         } catch (Exception e) {
-            Log.e("LogoutViewModel", "Excepción en logout: " + e.getMessage());
             mMensaje.setValue("Error inesperado al cerrar sesión");
             mLogoutExitoso.setValue(false);
         }
     }
 
     public boolean tieneTokenActivo() {
-        String token = ApiClient.leerToken(context);
-        return token != null && !token.isEmpty();
+        try {
+            return TokenHelper.tieneSesionActiva(context);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
