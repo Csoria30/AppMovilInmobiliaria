@@ -4,7 +4,7 @@ import com.ulp.appinmobiliaria.R;
 
 public class UIStateHelper {
 
-    // CLASE BASE
+    /** === CLASE BASE === */
     public static abstract class BaseUIState {
         public String mensaje;
         public TipoMensaje tipoMensaje;
@@ -12,13 +12,16 @@ public class UIStateHelper {
         public boolean mostrarToast;
         public boolean cargando;
 
+        /**
+         * NINGUNO: Sin mensaje
+         * INFO: Informacion General - Azul
+         * SUCCESS: Exito - Verde
+         * ERROR: - Error critico - Rojo
+         * VALIDATION: Error de validacion - Naranja
+         * WARNING: Advertencia - Amarillo
+         * */
         public enum TipoMensaje {
-            NINGUNO,     // Sin mensaje
-            INFO,        // Información general (azul)
-            SUCCESS,     // Éxito (verde)
-            ERROR,       // Error crítico (rojo)
-            VALIDATION,  // Error de validación de campos (naranja/amarillo)
-            WARNING      // Advertencia (amarillo)
+            NINGUNO, INFO, SUCCESS, ERROR, VALIDATION, WARNING
         }
 
         public BaseUIState() {
@@ -54,18 +57,13 @@ public class UIStateHelper {
     }
 
 
-    /**
-     * UIState: formularios editables
-     */
+    /** === UIState : Formularios Editables === */
     public static class FormUIState extends BaseUIState {
-
         public boolean mostrarCamposEditables;
         public boolean mostrarCamposVisualizacion;
-
         public String textoBoton;
         public int iconoBoton;
         public boolean botonHabilitado;
-
         public boolean mostrarBotonCancelar;
         public boolean mostrarBotonSecundario;
         public boolean habilitarBotonSecundario;
@@ -106,9 +104,7 @@ public class UIStateHelper {
         }
     }
 
-    /**
-     * UIState: Listas (Inmuebles  Contratos) etc
-     */
+    /** === UIState: Listas (Inmuebles  Contratos) === */
     public static class ListUIState extends BaseUIState {
         public boolean mostrarLista;
         public boolean mostrarVacio;
@@ -151,7 +147,7 @@ public class UIStateHelper {
     }
 
 
-    /** FACTORY METHODS PARA ESTADOS COMUNES */
+    /** === FACTORY METHODS PARA ESTADOS COMUNES === */
     public static class PerfilUIStates {
 
         /** Estado para visualizar datos del perfil sin posibilidad de edición */

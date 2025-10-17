@@ -1,6 +1,7 @@
 package com.ulp.appinmobiliaria.ui.perfil;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.ulp.appinmobiliaria.helpers.TokenHelper;
+import com.ulp.appinmobiliaria.helpers.UIStateHelper;
 import com.ulp.appinmobiliaria.model.PropietarioModel;
 import com.ulp.appinmobiliaria.request.ApiClient;
 
@@ -18,150 +20,75 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CambiarContrasenaViewModel extends AndroidViewModel {
-    private MutableLiveData<Boolean> mCargando = new MutableLiveData<>();
-    private MutableLiveData<String> mErrorValidacion = new MutableLiveData<>();
-    private MutableLiveData<String> mMensaje = new MutableLiveData<>();
-    private MutableLiveData<Boolean> mCambioExitoso = new MutableLiveData<>();
+    private final MutableLiveData<UIStateHelper.FormUIState> uiState = new MutableLiveData<>();
+    private Context context;
     public CambiarContrasenaViewModel(@NonNull Application application) {
         super(application);
+        context = getApplication();
     }
 
-    //Getters LiveData
-
-    public LiveData<Boolean> getMCargando() {
-        return mCargando;
+    /** === Getters LiveData === */
+    public LiveData<UIStateHelper.FormUIState> getUiState() {
+        return uiState;
     }
 
-    public LiveData<String> getMErrorValidacion() {
-        return mErrorValidacion;
-    }
-
-    public LiveData<String> getMMensaje() {
-        return mMensaje;
-    }
-
-    public LiveData<Boolean> getMCambioExitoso() {
-        return mCambioExitoso;
-    }
-
-    //Cambiar contraseña
-    public void cambiarContrasena(String contrasenaActual, String contrasenaNueva, String contrasenaConfirmar) {
-        // Validar campos
-        if (!validarCampos(contrasenaActual, contrasenaNueva, contrasenaConfirmar)) {
-            return;
-        }
-        // obtener datos actuales del propietario
-        obtenerPerfilYActualizarContrasena(contrasenaActual, contrasenaNueva);
-    }
-
-    private boolean validarCampos(String actual, String nueva, String confirmar) {
+    /** === Logica === */
+    public void cambiarContrasena(String actual, String nueva, String confirmar) {
+        // Validaciones
         if (actual == null || actual.trim().isEmpty()) {
-            mErrorValidacion.setValue("La contraseña actual es obligatoria");
-            return false;
+            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La contraseña actual es obligatoria"));
+            return;
         }
-
         if (nueva == null || nueva.trim().isEmpty()) {
-            mErrorValidacion.setValue("La nueva contraseña es obligatoria");
-            return false;
+            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La nueva contraseña es obligatoria"));
+            return;
         }
-
-        if (nueva.length() < 6) {
-            mErrorValidacion.setValue("La nueva contraseña debe tener al menos 6 caracteres");
-            return false;
+        if (confirmar == null || confirmar.trim().isEmpty()) {
+            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("Debe confirmar la nueva contraseña"));
+            return;
         }
-
         if (!nueva.equals(confirmar)) {
-            mErrorValidacion.setValue("Las contraseñas nuevas no coinciden");
-            return false;
+            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("Las contraseñas no coinciden"));
+            return;
         }
-
-        if (actual.equals(nueva)) {
-            mErrorValidacion.setValue("La nueva contraseña debe ser diferente a la actual");
-            return false;
-        }
-
-        mErrorValidacion.setValue(null);
-        return true;
-    }
-
-    private void obtenerPerfilYActualizarContrasena(String contrasenaActual, String contrasenaNueva) {
-        String token = TokenHelper.obtenerToken(getApplication());
-
-        if (token == null || token.isEmpty()) {
-            mMensaje.setValue("Token no encontrado. Inicie sesión nuevamente.");
+        if (nueva.length() < 6) {
+            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La nueva contraseña debe tener al menos 6 caracteres"));
             return;
         }
 
-        mCargando.setValue(true);
+        // Estado de carga
+        uiState.setValue(UIStateHelper.PerfilUIStates.guardandoCambios());
 
+        // Obtener token
+        TokenHelper.ResultadoValidacion validacion = TokenHelper.validarToken(context);
+
+        if (!validacion.esValido) {
+            uiState.setValue(UIStateHelper.PerfilUIStates.error(validacion.mensajeError));
+            return;
+        }
+
+        // Llamada a la API
         ApiClient.InmobiliariaService api = ApiClient.getApiInmobiliaria();
-        Call<PropietarioModel> call = api.obtenerPerfil("Bearer " + token);
-
-        call.enqueue(new Callback<PropietarioModel>() {
+        Call<Void> call = api.cambiarContrasena(validacion.tokenBearer, actual, nueva);
+        call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<PropietarioModel> call, Response<PropietarioModel> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    PropietarioModel propietario = response.body();
-
-                    // Verificar contraseña actual
-                    if (!propietario.getClave().equals(contrasenaActual)) {
-                        mCargando.setValue(false);
-                        mErrorValidacion.setValue("La contraseña actual es incorrecta");
-                        return;
-                    }
-
-                    // Actualizar solo la contraseña
-                    actualizarSoloContrasena(propietario, contrasenaNueva);
-                } else {
-                    mCargando.setValue(false);
-                    mMensaje.setValue("Error al obtener datos del perfil");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<PropietarioModel> call, Throwable t) {
-                mCargando.setValue(false);
-                mMensaje.setValue("Error de conexión: " + t.getMessage());
-            }
-        });
-    }
-
-    private void actualizarSoloContrasena(PropietarioModel propietario, String contrasenaNueva) {
-        PropietarioModel propietarioActualizado = new PropietarioModel();
-
-        propietarioActualizado.setIdPropietario(propietario.getIdPropietario());
-        propietarioActualizado.setDni(propietario.getDni());
-        propietarioActualizado.setNombre(propietario.getNombre());
-        propietarioActualizado.setApellido(propietario.getApellido());
-        propietarioActualizado.setEmail(propietario.getEmail());
-        propietarioActualizado.setTelefono(propietario.getTelefono());
-        propietarioActualizado.setClave(contrasenaNueva); // Cambiar Solo el Password
-
-        String token = TokenHelper.obtenerToken(getApplication());
-        ApiClient.InmobiliariaService api = ApiClient.getApiInmobiliaria();
-        Call<PropietarioModel> call = api.actualizarPerfil("Bearer " + token, propietarioActualizado);
-
-        call.enqueue(new Callback<PropietarioModel>() {
-            @Override
-            public void onResponse(Call<PropietarioModel> call, Response<PropietarioModel> response) {
-                mCargando.setValue(false);
-
+            public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    Log.d("CambiarContrasenaVM", "Contraseña actualizada correctamente");
-                    mMensaje.setValue("Contraseña cambiada exitosamente");
-                    mCambioExitoso.setValue(true);
+                    uiState.setValue(UIStateHelper.PerfilUIStates.exitoGuardado());
                 } else {
-                    mMensaje.setValue("Error al cambiar la contraseña: " + response.code());
-                    mCambioExitoso.setValue(false);
+                    uiState.setValue(UIStateHelper.PerfilUIStates.error("Error al cambiar la contraseña"));
                 }
             }
 
             @Override
-            public void onFailure(Call<PropietarioModel> call, Throwable t) {
-                mCargando.setValue(false);
-                mMensaje.setValue("Error de conexión: " + t.getMessage());
-                mCambioExitoso.setValue(false);
+            public void onFailure(Call<Void> call, Throwable t) {
+                uiState.setValue(UIStateHelper.PerfilUIStates.error("Error de conexión: " + t.getMessage()));
             }
         });
     }
+
+    public void limpiarEstado() {
+        uiState.setValue(UIStateHelper.PerfilUIStates.sinDatos());
+    }
+
 }

@@ -18,7 +18,7 @@ import retrofit2.http.PUT;
 public class ApiClient {
     public static final String URLBASE = "https://inmobiliariaulp-amb5hwfqaraweyga.canadacentral-01.azurewebsites.net/";
 
-    // ✅ SOLO configuración de Retrofit
+    // Configuración de Retrofit
     public static InmobiliariaService getApiInmobiliaria(){
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -32,7 +32,7 @@ public class ApiClient {
         return retrofit.create(InmobiliariaService.class);
     }
 
-    // ✅ SOLO interface de servicios
+    // Interface de servicios
     public interface InmobiliariaService{
         @FormUrlEncoded
         @POST("api/Propietarios/login")
@@ -51,5 +51,6 @@ public class ApiClient {
                 @Field("currentPassword") String currentPassword,
                 @Field("newPassword") String newPassword
         );
+
     }
 }

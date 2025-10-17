@@ -1,5 +1,6 @@
 package com.ulp.appinmobiliaria.ui.perfil;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
@@ -17,11 +18,12 @@ import android.widget.Toast;
 import com.ulp.appinmobiliaria.R;
 import com.ulp.appinmobiliaria.databinding.FragmentCambiarContrasenaBinding;
 import com.ulp.appinmobiliaria.databinding.FragmentPerfilBinding;
+import com.ulp.appinmobiliaria.helpers.UIStateHelper;
 
 public class CambiarContrasenaFragment extends Fragment {
-
     private FragmentCambiarContrasenaBinding binding;
     private CambiarContrasenaViewModel viewModel;
+    private final MutableLiveData<UIStateHelper.FormUIState> uiState = new MutableLiveData<>();
 
     public static CambiarContrasenaFragment newInstance() {
         return new CambiarContrasenaFragment();
@@ -40,37 +42,28 @@ public class CambiarContrasenaFragment extends Fragment {
     }
 
     private void configurarObservers() {
-        // Observer para estado de carga
-        viewModel.getMCargando().observe(getViewLifecycleOwner(), cargando -> {
-            binding.progressBar.setVisibility(cargando ? View.VISIBLE : View.GONE);
-            binding.btnGuardarContrasena.setEnabled(!cargando);
-        });
-
-        // Observer para errores de validación
-        viewModel.getMErrorValidacion().observe(getViewLifecycleOwner(), error -> {
-            if (error != null && !error.isEmpty()) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
-            }
-        });
-
-        // Observer para mensajes
-        viewModel.getMMensaje().observe(getViewLifecycleOwner(), mensaje -> {
-            if (mensaje != null && !mensaje.isEmpty()) {
-                Toast.makeText(getContext(), mensaje, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Observer para cambio exitoso
-        viewModel.getMCambioExitoso().observe(getViewLifecycleOwner(), exitoso -> {
-            if (exitoso != null && exitoso) {
-                // Volver al perfil
-                Navigation.findNavController(getView()).popBackStack();
-            }
+        viewModel.getUiState().observe(getViewLifecycleOwner(), uiState -> {
+            actualizarUI(uiState);
         });
     }
 
+    private void actualizarUI(UIStateHelper.FormUIState uiState) {
+        // Estado de carga
+        binding.progressBar.setVisibility(uiState.cargando ? View.VISIBLE : View.GONE);
+        binding.btnGuardarContrasena.setEnabled(!uiState.cargando);
+
+        // Mensaje de validación o error
+        if (uiState.mostrarMensaje && uiState.mensaje != null && !uiState.mensaje.isEmpty()) {
+            Toast.makeText(getContext(), uiState.mensaje, Toast.LENGTH_LONG).show();
+        }
+
+        // Cambio exitoso
+        if (uiState.tipoMensaje == UIStateHelper.BaseUIState.TipoMensaje.SUCCESS) {
+            Navigation.findNavController(binding.getRoot()).popBackStack();
+        }
+    }
+
     private void configurarEventos() {
-        // Botón guardar
         binding.btnGuardarContrasena.setOnClickListener(v -> {
             String contrasenaActual = binding.etContrasenaActual.getText().toString();
             String contrasenaNueva = binding.etContrasenaNueva.getText().toString();
@@ -79,7 +72,6 @@ public class CambiarContrasenaFragment extends Fragment {
             viewModel.cambiarContrasena(contrasenaActual, contrasenaNueva, contrasenaConfirmar);
         });
 
-        // Botón cancelar
         binding.btnCancelar.setOnClickListener(v -> {
             Navigation.findNavController(v).popBackStack();
         });
@@ -90,6 +82,5 @@ public class CambiarContrasenaFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
-
 
 }
