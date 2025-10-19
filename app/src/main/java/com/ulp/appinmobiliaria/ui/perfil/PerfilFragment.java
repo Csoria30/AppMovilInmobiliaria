@@ -85,7 +85,6 @@ public class PerfilFragment extends Fragment {
         configurarBotones(uiState);
         configurarCarga(uiState.cargando);
         configurarMensaje(uiState);
-        llenarCampos();
     }
 
     private void configurarCampos(boolean modoEdicion) {
@@ -135,7 +134,9 @@ public class PerfilFragment extends Fragment {
     private void configurarMensaje(UIStateHelper.FormUIState uiState) {
         //Toast.makeText(getContext(), uiState.mensaje, Toast.LENGTH_LONG).show();
         if (uiState.mostrarMensaje && uiState.mensaje != null && !uiState.mensaje.isEmpty()) {
-            mostrarErrorEnCampo(uiState.campoError, uiState.mensaje);
+            if (uiState.campoError != null && !uiState.campoError.isEmpty()) {
+                mostrarErrorEnCampo(uiState.campoError, uiState.mensaje);
+            }
         }
     }
 
