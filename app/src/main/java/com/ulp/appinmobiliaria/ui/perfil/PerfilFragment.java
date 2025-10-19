@@ -45,8 +45,13 @@ public class PerfilFragment extends Fragment {
         return binding.getRoot();
     }
 
+    /** === OBSERVERS === */
 
+    /* getViewLifecycleOwner()
+    * Ddevuelve el ciclo de vida de la vista del Fragment, solo envia actualizaciones mientras la vida del frag este activo.
+    * */
     private void configurarObservers() {
+
         viewModel.getUIState().observe(getViewLifecycleOwner(), uiState -> {
             actualizarUI(uiState);
         });
@@ -56,6 +61,7 @@ public class PerfilFragment extends Fragment {
         });
     }
 
+    /** === EVENTOS === */
     private void configurarEventos() {
         binding.btnEditarPerfil.setOnClickListener(v -> {
             PropietarioModel propietario = new PropietarioModel();
@@ -80,6 +86,13 @@ public class PerfilFragment extends Fragment {
     }
 
     /** === Manejar IU principal === */
+
+    /*
+    configurarCampos: Maneja campos vista / edicion (booelan)
+    configurarBotones: Actualiza texto, iconos, visualizacion segun estado
+    configurarCarga: Muestra / oculta overlay
+    configurarMensaje: Maneja mje error - exito
+    * */
     private void actualizarUI(UIStateHelper.FormUIState uiState) {
         configurarCampos(uiState.mostrarCamposEditables);
         configurarBotones(uiState);
@@ -130,9 +143,7 @@ public class PerfilFragment extends Fragment {
 
 
     /** === MENSAJE DE ERRORES === */
-
-    private void configurarMensaje(UIStateHelper.FormUIState uiState) {
-        //Toast.makeText(getContext(), uiState.mensaje, Toast.LENGTH_LONG).show();
+    private void configurarMensaje(UIStateHelper.FormUIState uiState){
         if (uiState.mostrarMensaje && uiState.mensaje != null && !uiState.mensaje.isEmpty()) {
             if (uiState.campoError != null && !uiState.campoError.isEmpty()) {
                 mostrarErrorEnCampo(uiState.campoError, uiState.mensaje);

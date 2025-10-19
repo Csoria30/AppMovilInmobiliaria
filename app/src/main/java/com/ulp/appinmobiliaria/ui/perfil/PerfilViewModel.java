@@ -22,20 +22,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PerfilViewModel extends AndroidViewModel {
-
     private MutableLiveData<PropietarioModel> mPropietario = new MutableLiveData<>(new PropietarioModel());
-    private MutableLiveData<Boolean> mActualizacionExitosa = new MutableLiveData<>();
     private MutableLiveData<FormUIState> mUIState = new MutableLiveData<>();
-
     private PropietarioModel propietarioActual;
-    private boolean modoEdicionActual = false;
     private final Context context;
 
     // ===== CONSTRUCTOR =====
     public PerfilViewModel(@NonNull Application application) {
         super(application);
         context = getApplication();
-        mActualizacionExitosa.setValue(false);
         actualizarUIState();
     }
 
@@ -44,9 +39,6 @@ public class PerfilViewModel extends AndroidViewModel {
         return mPropietario;
     }
 
-    public LiveData<Boolean> getMActualizacionExitosa() {
-        return mActualizacionExitosa;
-    }
 
     public LiveData<FormUIState> getUIState() {
         return mUIState;
@@ -95,7 +87,10 @@ public class PerfilViewModel extends AndroidViewModel {
 
     /** Si esta en modo edicion, guarda cambios | si no pasa a modo edicion */
     public void manejarAccionBotonPrincipal(PropietarioModel propietario) {
-        if (modoEdicionActual) {
+        FormUIState uiState = mUIState.getValue();
+        boolean modoEdicion = uiState != null && uiState.mostrarCamposEditables;
+
+        if (modoEdicion) {
             guardarCambios(propietario);
         } else {
             cambiarModoEdicion();
@@ -103,17 +98,16 @@ public class PerfilViewModel extends AndroidViewModel {
     }
 
     public void cambiarModoEdicion() {
-        modoEdicionActual = !modoEdicionActual;
-        actualizarUIState();
-        Log.d("PerfilViewModel", modoEdicionActual ? "Activando modo edición" : "Activando modo vista");
+        FormUIState state = UIStateHelper.PerfilUIStates.modoEdicion(false);
+        state.mostrarCamposEditables = true;
+        mUIState.setValue(state);
     }
 
     public void cancelarEdicion() {
-        if (modoEdicionActual) {
-            modoEdicionActual = false;
-            actualizarUIState();
-            Log.d("PerfilViewModel", "Cancelando edición");
-        }
+        FormUIState state = UIStateHelper.PerfilUIStates.modoVista(false);
+        state.mostrarCamposEditables = false;
+        mUIState.setValue(state);
+        Log.d("PerfilViewModel", "Cancelando edición");
     }
 
     public void guardarCambios(PropietarioModel propietario) {
@@ -199,7 +193,10 @@ public class PerfilViewModel extends AndroidViewModel {
 
     // ===== MÉTODOS PRIVADOS - UTILIDADES =====
     private void actualizarUIState() {
-        if (modoEdicionActual) {
+        FormUIState uiState = mUIState.getValue();
+        boolean modoEdicion = uiState != null && uiState.mostrarCamposEditables;
+
+        if (modoEdicion) {
             mUIState.setValue(UIStateHelper.PerfilUIStates.modoEdicion(false));
         } else {
             mUIState.setValue(UIStateHelper.PerfilUIStates.modoVista(false));
@@ -251,30 +248,31 @@ public class PerfilViewModel extends AndroidViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     propietarioActual = response.body();
                     mPropietario.setValue(propietarioActual);
-                    mActualizacionExitosa.setValue(true);
 
                     // Cambiar a modo vista con éxito
-                    modoEdicionActual = false;
-                    mUIState.setValue(UIStateHelper.PerfilUIStates.exitoGuardado());
+                    FormUIState state = UIStateHelper.PerfilUIStates.exitoGuardado();
+                    state.actualizacionExitosa = true;
+                    state.mostrarCamposEditables = false;
+                    mUIState.setValue(state);
                 } else {
                     Log.e("PerfilViewModel", "Error al actualizar: " + response.code());
                     String mensaje = ErrorHelper.obtenerMensajeError(response.code());
-                    mUIState.setValue(UIStateHelper.PerfilUIStates.error(mensaje));
-                    mActualizacionExitosa.setValue(false);
+                    FormUIState state = UIStateHelper.PerfilUIStates.error(mensaje);
+                    state.actualizacionExitosa = false; // Opcional, si quieres dejarlo explícito
+                    mUIState.setValue(state);
                 }
             }
 
             @Override
             public void onFailure(Call<PropietarioModel> call, Throwable t) {
                 String mensaje = ErrorHelper.obtenerMensajeConexion(t);
-                mUIState.setValue(UIStateHelper.PerfilUIStates.error(mensaje));
-                mActualizacionExitosa.setValue(false);
+                FormUIState state = UIStateHelper.PerfilUIStates.error(mensaje);
+                state.actualizacionExitosa = false;
+                mUIState.setValue(state);
                 Log.e("PerfilViewModel", "Error de conexión: " + t.getMessage());
             }
         });
     }
 
-    public void limpiarMensajeExito() {
-        mActualizacionExitosa.setValue(false);
-    }
+
 }

@@ -61,12 +61,13 @@ public class UIStateHelper {
     public static class FormUIState extends BaseUIState {
         public boolean mostrarCamposEditables;
         public boolean mostrarCamposVisualizacion;
-        public String textoBoton;
-        public int iconoBoton;
+        public boolean actualizacionExitosa;
         public boolean botonHabilitado;
         public boolean mostrarBotonCancelar;
         public boolean mostrarBotonSecundario;
         public boolean habilitarBotonSecundario;
+        public String textoBoton;
+        public int iconoBoton;
         public String campoError;
 
         public FormUIState(boolean modoEdicion, String textoBoton, int iconoBoton, boolean habilitado) {
@@ -233,6 +234,7 @@ public class UIStateHelper {
             state.conCarga(false);
             state.conMensaje("✅ Perfil actualizado correctamente", BaseUIState.TipoMensaje.SUCCESS);
             state.conToast(true);
+            state.actualizacionExitosa = true;
             return state;
         }
 
