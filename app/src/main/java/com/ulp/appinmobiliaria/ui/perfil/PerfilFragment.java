@@ -20,6 +20,8 @@ import com.ulp.appinmobiliaria.databinding.FragmentPerfilBinding;
 import com.ulp.appinmobiliaria.helpers.UIStateHelper;
 import com.ulp.appinmobiliaria.model.PropietarioModel;
 
+import java.util.HashMap;
+
 public class PerfilFragment extends Fragment {
 
     private FragmentPerfilBinding binding;
@@ -52,25 +54,18 @@ public class PerfilFragment extends Fragment {
         viewModel.getmPropietario().observe(getViewLifecycleOwner(), propietario -> {
             llenarCampos();
         });
-
-        // Observer para éxito
-        /*
-        viewModel.getMActualizacionExitosa().observe(getViewLifecycleOwner(), exitoso -> {
-            Toast.makeText(getContext(), "✅ Perfil actualizado correctamente", Toast.LENGTH_SHORT).show();
-        });
-        */
     }
 
     private void configurarEventos() {
         binding.btnEditarPerfil.setOnClickListener(v -> {
-            String dni = binding.etDni.getText().toString();
-            String nombre = binding.etNombre.getText().toString();
-            String apellido = binding.etApellido.getText().toString();
-            String email = binding.etEmail.getText().toString();
-            String telefono = binding.etTelefono.getText().toString();
+            PropietarioModel propietario = new PropietarioModel();
+            propietario.setDni(binding.etDni.getText().toString());
+            propietario.setNombre(binding.etNombre.getText().toString());
+            propietario.setApellido(binding.etApellido.getText().toString());
+            propietario.setEmail(binding.etEmail.getText().toString());
+            propietario.setTelefono(binding.etTelefono.getText().toString());
 
-            // ViewModel maneja todo
-            viewModel.manejarAccionBotonPrincipal(dni, nombre, apellido, email, telefono);
+            viewModel.manejarAccionBotonPrincipal(propietario);
         });
 
         // Botón cancelar
@@ -84,12 +79,10 @@ public class PerfilFragment extends Fragment {
         });
     }
 
-    /** Manejar IU principal*/
+    /** === Manejar IU principal === */
     private void actualizarUI(UIStateHelper.FormUIState uiState) {
         configurarCampos(uiState.mostrarCamposEditables);
-        configurarBotonPrincipal(uiState);
-        configurarBotonSecundario(uiState);
-        configurarBotonCancelar(uiState);
+        configurarBotones(uiState);
         configurarCarga(uiState.cargando);
         configurarMensaje(uiState);
         llenarCampos();
@@ -97,30 +90,28 @@ public class PerfilFragment extends Fragment {
 
     private void configurarCampos(boolean modoEdicion) {
         if (modoEdicion) {
-            mostrarCamposEditables();
+            mostrarCampos(true);
         } else {
-            mostrarCamposVisualizacion();
+            mostrarCampos(false);
         }
     }
 
-    private void configurarBotonPrincipal(UIStateHelper.FormUIState uiState) {
+    private void configurarBotones(UIStateHelper.FormUIState uiState) {
+        // Botón principal
         binding.btnEditarPerfil.setText(uiState.textoBoton);
         binding.btnEditarPerfil.setEnabled(uiState.botonHabilitado);
-
         binding.btnEditarPerfil.setCompoundDrawablesWithIntrinsicBounds(
                 ContextCompat.getDrawable(getContext(), uiState.iconoBoton),
-                null, null, null
+                null, null, null //Evita superposicion de draw
         );
-    }
 
-    private void configurarBotonSecundario(UIStateHelper.FormUIState uiState) {
+        // Botón secundario
         binding.btnCambiarContrasena.setVisibility(
                 uiState.mostrarBotonSecundario ? View.VISIBLE : View.GONE
         );
         binding.btnCambiarContrasena.setEnabled(uiState.habilitarBotonSecundario);
-    }
 
-    private void configurarBotonCancelar(UIStateHelper.FormUIState uiState) {
+        // Botón cancelar
         binding.btnCancelar.setVisibility(
                 uiState.mostrarBotonCancelar ? View.VISIBLE : View.GONE
         );
@@ -137,9 +128,24 @@ public class PerfilFragment extends Fragment {
         }
     }
 
+
+
+    /** === MENSAJE DE ERRORES === */
+
     private void configurarMensaje(UIStateHelper.FormUIState uiState) {
+        //Toast.makeText(getContext(), uiState.mensaje, Toast.LENGTH_LONG).show();
         if (uiState.mostrarMensaje && uiState.mensaje != null && !uiState.mensaje.isEmpty()) {
-            Toast.makeText(getContext(), uiState.mensaje, Toast.LENGTH_LONG).show();
+            mostrarErrorEnCampo(uiState.campoError, uiState.mensaje);
+        }
+    }
+
+    private void mostrarErrorEnCampo(String campo, String mensaje) {
+        switch (campo) {
+            case "nombre": binding.etNombre.setError(mensaje); break;
+            case "apellido": binding.etApellido.setError(mensaje); break;
+            case "dni": binding.etDni.setError(mensaje); break;
+            case "email": binding.etEmail.setError(mensaje); break;
+            case "telefono": binding.etTelefono.setError(mensaje); break;
         }
     }
 
@@ -161,38 +167,27 @@ public class PerfilFragment extends Fragment {
         binding.etTelefono.setText(viewModel.getTelefono());
     }
 
-    private void mostrarCamposEditables() {
-        // Ocultar TextViews
-        binding.tvDni.setVisibility(View.GONE);
-        binding.tvNombre.setVisibility(View.GONE);
-        binding.tvApellido.setVisibility(View.GONE);
-        binding.tvEmail.setVisibility(View.GONE);
-        binding.tvTelefono.setVisibility(View.GONE);
+    private void mostrarCampos(boolean modoEdicion) {
+        int visibilidadEdit = modoEdicion ? View.VISIBLE : View.GONE;
+        int visibilidadText = modoEdicion ? View.GONE : View.VISIBLE;
 
-        // Mostrar EditTexts
-        binding.etDni.setVisibility(View.VISIBLE);
-        binding.etNombre.setVisibility(View.VISIBLE);
-        binding.etApellido.setVisibility(View.VISIBLE);
-        binding.etEmail.setVisibility(View.VISIBLE);
-        binding.etTelefono.setVisibility(View.VISIBLE);
-    }
+        // TextViews
+        binding.tvDni.setVisibility(visibilidadText);
+        binding.tvNombre.setVisibility(visibilidadText);
+        binding.tvApellido.setVisibility(visibilidadText);
+        binding.tvEmail.setVisibility(visibilidadText);
+        binding.tvTelefono.setVisibility(visibilidadText);
 
-    private void mostrarCamposVisualizacion() {
-        // Mostrar TextViews
-        binding.tvDni.setVisibility(View.VISIBLE);
-        binding.tvNombre.setVisibility(View.VISIBLE);
-        binding.tvApellido.setVisibility(View.VISIBLE);
-        binding.tvEmail.setVisibility(View.VISIBLE);
-        binding.tvTelefono.setVisibility(View.VISIBLE);
+        // EditTexts
+        binding.etDni.setVisibility(visibilidadEdit);
+        binding.etNombre.setVisibility(visibilidadEdit);
+        binding.etApellido.setVisibility(visibilidadEdit);
+        binding.etEmail.setVisibility(visibilidadEdit);
+        binding.etTelefono.setVisibility(visibilidadEdit);
 
-        // Ocultar EditTexts
-        binding.etDni.setVisibility(View.GONE);
-        binding.etNombre.setVisibility(View.GONE);
-        binding.etApellido.setVisibility(View.GONE);
-        binding.etEmail.setVisibility(View.GONE);
-        binding.etTelefono.setVisibility(View.GONE);
-
-        limpiarErrores();
+        if (!modoEdicion) {
+            limpiarErrores();
+        }
     }
 
     private void limpiarErrores() {

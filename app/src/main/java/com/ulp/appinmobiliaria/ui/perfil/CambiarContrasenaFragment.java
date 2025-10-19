@@ -53,8 +53,8 @@ public class CambiarContrasenaFragment extends Fragment {
         binding.btnGuardarContrasena.setEnabled(!uiState.cargando);
 
         // Mensaje de validación o error
-        if (uiState.mostrarMensaje && uiState.mensaje != null && !uiState.mensaje.isEmpty()) {
-            Toast.makeText(getContext(), uiState.mensaje, Toast.LENGTH_LONG).show();
+        if (uiState.campoError != null && !uiState.campoError.isEmpty()) {
+            mostrarErrorEnCampo(uiState.campoError, uiState.mensaje);
         }
 
         // Cambio exitoso
@@ -75,6 +75,17 @@ public class CambiarContrasenaFragment extends Fragment {
         binding.btnCancelar.setOnClickListener(v -> {
             Navigation.findNavController(v).popBackStack();
         });
+    }
+
+    private void mostrarErrorEnCampo(String campo, String mensaje) {
+        switch (campo) {
+            case "actual": binding.etContrasenaActual.setError(mensaje); break;
+            case "nueva": binding.etContrasenaNueva.setError(mensaje); break;
+            case "confirmar": binding.etContrasenaConfirmar.setError(mensaje); break;
+            default:
+                Toast.makeText(getContext(), mensaje, Toast.LENGTH_LONG).show();
+                break;
+        }
     }
 
     @Override

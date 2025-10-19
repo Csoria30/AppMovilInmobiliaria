@@ -36,23 +36,23 @@ public class CambiarContrasenaViewModel extends AndroidViewModel {
     public void cambiarContrasena(String actual, String nueva, String confirmar) {
         // Validaciones
         if (actual == null || actual.trim().isEmpty()) {
-            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La contraseña actual es obligatoria"));
+            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La contraseña actual es obligatoria", "actual"));
             return;
         }
         if (nueva == null || nueva.trim().isEmpty()) {
-            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La nueva contraseña es obligatoria"));
+            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La nueva contraseña es obligatoria", "nueva"));
             return;
         }
         if (confirmar == null || confirmar.trim().isEmpty()) {
-            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("Debe confirmar la nueva contraseña"));
+            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("Debe confirmar la nueva contraseña", "confirmar"));
             return;
         }
         if (!nueva.equals(confirmar)) {
-            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("Las contraseñas no coinciden"));
+            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("Las contraseñas no coinciden", ""));
             return;
         }
         if (nueva.length() < 6) {
-            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La nueva contraseña debe tener al menos 6 caracteres"));
+            uiState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La nueva contraseña debe tener al menos 6 caracteres", "nueva"));
             return;
         }
 
@@ -86,6 +86,9 @@ public class CambiarContrasenaViewModel extends AndroidViewModel {
             }
         });
     }
+
+    /** === MENSAJE DE ERRORES ===  */
+
 
     public void limpiarEstado() {
         uiState.setValue(UIStateHelper.PerfilUIStates.sinDatos());

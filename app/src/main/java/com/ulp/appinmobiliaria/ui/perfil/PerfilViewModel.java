@@ -1,6 +1,7 @@
 package com.ulp.appinmobiliaria.ui.perfil;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -28,10 +29,12 @@ public class PerfilViewModel extends AndroidViewModel {
 
     private PropietarioModel propietarioActual;
     private boolean modoEdicionActual = false;
+    private final Context context;
 
     // ===== CONSTRUCTOR =====
     public PerfilViewModel(@NonNull Application application) {
         super(application);
+        context = getApplication();
         mActualizacionExitosa.setValue(false);
         actualizarUIState();
     }
@@ -55,13 +58,15 @@ public class PerfilViewModel extends AndroidViewModel {
         //progessBar cargando perfil
         mUIState.setValue(UIStateHelper.PerfilUIStates.cargandoPerfil());
 
-        TokenHelper.ResultadoValidacion validacion = TokenHelper.validarToken(getApplication());
+        //Obteniedo informacion del Token
+        TokenHelper.ResultadoValidacion validacion = TokenHelper.validarToken(context);
 
         if (!validacion.esValido) {
             mUIState.setValue(UIStateHelper.PerfilUIStates.error(validacion.mensajeError));
             return;
         }
 
+        //Intancia de API
         ApiClient.InmobiliariaService api = ApiClient.getApiInmobiliaria();
         Call<PropietarioModel> call = api.obtenerPerfil(validacion.tokenBearer);
 
@@ -72,11 +77,10 @@ public class PerfilViewModel extends AndroidViewModel {
                     propietarioActual = response.body();
                     mPropietario.setValue(propietarioActual);
                     mUIState.setValue(UIStateHelper.PerfilUIStates.modoVista(false));
-                    Log.d("PerfilViewModel", "Perfil obtenido: " + propietarioActual.getNombre());
                 } else {
-                    Log.e("PerfilViewModel", "Error en respuesta: " + response.code());
                     String mensaje = ErrorHelper.obtenerMensajeError(response.code());
                     mUIState.setValue(UIStateHelper.PerfilUIStates.error(mensaje));
+                    Log.e("PerfilViewModel", "Error en respuesta: " + response.code());
                 }
             }
 
@@ -87,12 +91,12 @@ public class PerfilViewModel extends AndroidViewModel {
                 Log.e("PerfilViewModel", "Error de conexión: " + t.getMessage());
             }
         });
-    }
+    } //.ObtenerPerfil
 
     /** Si esta en modo edicion, guarda cambios | si no pasa a modo edicion */
-    public void manejarAccionBotonPrincipal(String dni, String nombre, String apellido, String email, String telefono) {
+    public void manejarAccionBotonPrincipal(PropietarioModel propietario) {
         if (modoEdicionActual) {
-            guardarCambios(dni, nombre, apellido, email, telefono);
+            guardarCambios(propietario);
         } else {
             cambiarModoEdicion();
         }
@@ -112,17 +116,11 @@ public class PerfilViewModel extends AndroidViewModel {
         }
     }
 
-    public void guardarCambios(String dni, String nombre, String apellido, String email, String telefono) {
-        if (!validarCamposConHelpers(dni, nombre, apellido, email, telefono)) {
+    public void guardarCambios(PropietarioModel propietario) {
+        if (!validarCamposConHelpers(propietario)) {
             return;
         }
-
-        PropietarioModel propietarioActualizado = crearPropietarioActualizado(dni, nombre, apellido, email, telefono);
-        if (propietarioActualizado == null) {
-            return;
-        }
-
-        actualizarPerfil(propietarioActualizado);
+        actualizarPerfil(propietario);
     }
 
     /** ===== GETTERS PARA DATOS DEL PROPIETARIO =====
@@ -154,53 +152,43 @@ public class PerfilViewModel extends AndroidViewModel {
     }
 
     /** =====  VALIDACIONES ===== */
-    private boolean validarCamposConHelpers(String dni, String nombre, String apellido, String email, String telefono) {
+    private boolean validarCamposConHelpers(PropietarioModel propietario) {
         // Helper Validacion: nombre
-        if (!ValidationHelper.esCampoValido(nombre)) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El nombre es obligatorio"));
+        if (!ValidationHelper.esCampoValido(propietario.getNombre())) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El nombre es obligatorio", "nombre"));
             return false;
         }
 
-        if (nombre.trim().length() < 2) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
-                    "El nombre debe tener al menos 2 caracteres"
-            ));
+        if (propietario.getNombre().trim().length() < 2) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El nombre debe tener al menos 2 caracteres", "nombre"));
             return false;
         }
 
         // Helper Validacion: apellido
-        if (!ValidationHelper.esCampoValido(apellido)) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El apellido es obligatorio"));
+        if (!ValidationHelper.esCampoValido(propietario.getApellido())) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El apellido es obligatorio", "apellido"));
             return false;
         }
-        if (apellido.trim().length() < 2) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
-                    "El apellido debe tener al menos 2 caracteres"
-            ));
+        if (propietario.getApellido().trim().length() < 2) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El apellido debe tener al menos 2 caracteres", "apellido"));
             return false;
         }
 
         // Helper Validacion: Dni
-        if (!ValidationHelper.esDniValido(dni)) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
-                    "El DNI debe tener entre 7 y 8 dígitos"
-            ));
+        if (!ValidationHelper.esDniValido(propietario.getDni())) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El DNI debe tener entre 7 y 8 dígitos", "dni"));
             return false;
         }
 
         // Helper Validacion: Email
-        if (!ValidationHelper.esEmailValido(email)) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
-                    "El formato del email no es válido"
-            ));
+        if (!ValidationHelper.esEmailValido(propietario.getEmail())) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El formato del email no es válido", "email"));
             return false;
         }
 
         // Helper Validacion: telefono
-        if (!ValidationHelper.esTelefonoValido(telefono)) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
-                    "El teléfono debe tener entre 8 y 15 dígitos"
-            ));
+        if (!ValidationHelper.esTelefonoValido(propietario.getTelefono())) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El teléfono debe tener entre 8 y 15 dígitos", "telefono"));
             return false;
         }
 
@@ -218,24 +206,21 @@ public class PerfilViewModel extends AndroidViewModel {
         }
     }
 
-    private PropietarioModel crearPropietarioActualizado(String dni, String nombre, String apellido, String email, String telefono) {
+    private PropietarioModel crearPropietarioActualizado(PropietarioModel nuevosDatos) {
         if (propietarioActual == null) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
-                    "Error: No se pudo obtener los datos actuales del propietario"
-            ));
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("Error: No se pudo obtener los datos actuales del propietario", "general"));
             return null;
         }
 
         PropietarioModel propietarioActualizado = new PropietarioModel();
         propietarioActualizado.setIdPropietario(propietarioActual.getIdPropietario());
-        propietarioActualizado.setDni(dni.trim());
-        propietarioActualizado.setNombre(nombre.trim());
-        propietarioActualizado.setApellido(apellido.trim());
-        propietarioActualizado.setEmail(email.trim());
-        propietarioActualizado.setTelefono(telefono.trim());
+        propietarioActualizado.setDni(nuevosDatos.getDni().trim());
+        propietarioActualizado.setNombre(nuevosDatos.getNombre().trim());
+        propietarioActualizado.setApellido(nuevosDatos.getApellido().trim());
+        propietarioActualizado.setEmail(nuevosDatos.getEmail().trim());
+        propietarioActualizado.setTelefono(nuevosDatos.getTelefono().trim());
+        propietarioActualizado.setClave(null); // Para evitar doble hash
 
-        // Contraseña null - para evitar doble Hash
-        propietarioActualizado.setClave(null);
         return propietarioActualizado;
     }
 
@@ -250,7 +235,7 @@ public class PerfilViewModel extends AndroidViewModel {
 
         if (propietario == null) {
             mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion(
-                    "Error: Datos del propietario inválidos"
+                    "Error: Datos del propietario inválidos", "propietario"
             ));
             return;
         }

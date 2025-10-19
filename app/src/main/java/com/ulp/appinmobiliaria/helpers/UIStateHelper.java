@@ -67,6 +67,7 @@ public class UIStateHelper {
         public boolean mostrarBotonCancelar;
         public boolean mostrarBotonSecundario;
         public boolean habilitarBotonSecundario;
+        public String campoError;
 
         public FormUIState(boolean modoEdicion, String textoBoton, int iconoBoton, boolean habilitado) {
             super();
@@ -178,7 +179,7 @@ public class UIStateHelper {
         }
 
         /** Estado cuando hay errores en la validación de campos del formulario */
-        public static FormUIState errorValidacion(String mensaje) {
+        public static FormUIState errorValidacion(String mensaje, String campoError) {
             FormUIState state = new FormUIState(
                     true,
                     "Guardar Cambios",
@@ -188,6 +189,7 @@ public class UIStateHelper {
             state.conBotonSecundario(false, false);
             state.conCarga(false);
             state.conMensaje(mensaje, BaseUIState.TipoMensaje.VALIDATION);
+            state.campoError = campoError;
             return state;
         }
 
