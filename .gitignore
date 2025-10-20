@@ -48,3 +48,10 @@ google-services.json
 .externalNativeBuild
 .cxx
 local.properties
+
+.vs/
+*.user
+*.suo
+*.vscode/
+bin/
+obj/

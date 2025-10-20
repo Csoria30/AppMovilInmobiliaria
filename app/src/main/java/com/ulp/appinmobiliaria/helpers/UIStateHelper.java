@@ -167,7 +167,6 @@ public class UIStateHelper {
 
         /** Estado para editar campos del perfil con controles de edición activos */
         public static FormUIState modoEdicion(boolean cargando) {
-            // ✅ CORREGIDO: Eliminar casting problemático
             FormUIState state = new FormUIState(
                     true,
                     "Guardar Cambios",
@@ -232,7 +231,7 @@ public class UIStateHelper {
             );
             state.conBotonSecundario(true, true);
             state.conCarga(false);
-            state.conMensaje("✅ Perfil actualizado correctamente", BaseUIState.TipoMensaje.SUCCESS);
+            state.conMensaje("Perfil actualizado correctamente", BaseUIState.TipoMensaje.SUCCESS);
             state.conToast(true);
             state.actualizacionExitosa = true;
             return state;
@@ -288,8 +287,8 @@ public class UIStateHelper {
                     true                                    //Btn habilitado Click
             );
             state.conBotonSecundario(false, false);
-            state.conCarga(false);                              // Carga de Progress Bar
-            state.conMensaje("No se pudieron cargar los datos del perfil", BaseUIState.TipoMensaje.WARNING); // ✅ CORREGIDO
+            state.conCarga(false);
+            state.conMensaje("No se pudieron cargar los datos del perfil", BaseUIState.TipoMensaje.WARNING);
             return state;
         }
     }
