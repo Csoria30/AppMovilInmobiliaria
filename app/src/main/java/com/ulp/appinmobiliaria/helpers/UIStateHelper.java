@@ -108,11 +108,11 @@ public class UIStateHelper {
 
     /** === UIState: Listas (Inmuebles  Contratos) === */
     public static class ListUIState extends BaseUIState {
+        public int cantidadItems;
         public boolean mostrarLista;
         public boolean mostrarVacio;
         public boolean mostrarError;
         public boolean mostrarCargando;
-        public int cantidadItems;
 
         public ListUIState() {
             super();

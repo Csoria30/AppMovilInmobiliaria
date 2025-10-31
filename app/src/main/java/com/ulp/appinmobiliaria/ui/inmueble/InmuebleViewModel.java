@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.gms.common.api.Api;
 import com.ulp.appinmobiliaria.helpers.ErrorHelper;
 import com.ulp.appinmobiliaria.helpers.TokenHelper;
+import com.ulp.appinmobiliaria.helpers.UIStateHelper;
 import com.ulp.appinmobiliaria.model.InmuebleModel;
 import com.ulp.appinmobiliaria.request.ApiClient;
 
@@ -25,6 +26,7 @@ import retrofit2.Response;
 public class InmuebleViewModel extends AndroidViewModel {
     private Context context;
     private MutableLiveData<List<InmuebleModel>> listaInmuebles = new MutableLiveData<>();
+    private MutableLiveData<UIStateHelper.ListUIState> mUIState = new MutableLiveData<>();
 
     public InmuebleViewModel(@NonNull Application application) {
         super(application);
@@ -36,6 +38,9 @@ public class InmuebleViewModel extends AndroidViewModel {
     }
 
     public void cargarInmuebles(){
+        //progessBar cargando perfil
+        mUIState.setValue(UIStateHelper.ListUIState.cargando());
+
         // Obtener token
         TokenHelper.ResultadoValidacion validacion = TokenHelper.validarToken(context);
 
@@ -63,7 +68,7 @@ public class InmuebleViewModel extends AndroidViewModel {
 
                     inmueblesPropios.sort((a, b) -> a.getDireccion().compareToIgnoreCase(b.getDireccion()));
                     listaInmuebles.setValue(inmueblesPropios);
-                    // mUIState.setValue(UIStateHelper.InmueblesUIStates.exito());
+                    mUIState.setValue(UIStateHelper.ListUIState.conDatos(inmueblesPropios.size()));
                 } else {
                     String mensaje = ErrorHelper.obtenerMensajeError(response.code());
                     // mUIState.setValue(UIStateHelper.InmueblesUIStates.error(mensaje));
