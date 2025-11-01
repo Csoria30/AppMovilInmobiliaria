@@ -101,17 +101,17 @@
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
-                    <!-- TextView para modo vista -->
-                    <TextView
-                        android:id="@+id/tvDni"
-                        android:layout_width="0dp"
-                        android:layout_height="50dp"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingEnd="16dp"
-                        android:text="12.345.678"
-                        android:textColor="#2C3E50"
-                        android:textSize="16sp" />
+                <!-- TextView para modo vista -->
+                <TextView
+                    android:id="@+id/tvDni"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingEnd="16dp"
+                    android:text="12.345.678"
+                    android:textColor="#2C3E50"
+                    android:textSize="16sp" />
 
                     <!-- EditText para modo edición -->
                     <EditText

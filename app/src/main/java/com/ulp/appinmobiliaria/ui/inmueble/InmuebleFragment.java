@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.view.LayoutInflater;
@@ -37,6 +38,11 @@ public class InmuebleFragment extends Fragment {
         binding = FragmentInmuebleBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+
+        // Configura el click del botón flotante
+        binding.fab.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_inmuebleFragment_to_informacionInmueble);
+        });
 
         //Observer
         viewModel.getListaInmuebles().observe(getViewLifecycleOwner(), new Observer<List<InmuebleModel>>() {

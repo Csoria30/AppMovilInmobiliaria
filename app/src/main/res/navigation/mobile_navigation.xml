@@ -32,7 +32,19 @@
         android:id="@+id/nav_inmueble"
         android:name="com.ulp.appinmobiliaria.ui.inmueble.InmuebleFragment"
         android:label="@string/menu_inmuebles"
-        tools:layout="@layout/fragment_inmueble" />
+        tools:layout="@layout/fragment_inmueble">
+
+        <action
+            android:id="@+id/action_inmuebleFragment_to_informacionInmueble"
+            app:destination="@+id/informacionInmueble" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/informacionInmueble"
+        android:name="com.ulp.appinmobiliaria.ui.inmueble.InmuebleFormFragment"
+        android:label="Informacion Inmueble"
+        tools:layout="@layout/fragment_inmueble_form" />
 
     <fragment
         android:id="@+id/nav_inquilino"
