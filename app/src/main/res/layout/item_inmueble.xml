@@ -61,6 +61,14 @@
             android:textSize="14sp"
             android:layout_marginTop="2dp"/>
 
+        <CheckBox
+            android:id="@+id/cbDisponible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Disponible"
+            android:textColor="#2C3E50"
+            android:layout_marginTop="8dp"/>
+
         <Button
             android:id="@+id/btnMasInfo"
             android:layout_width="match_parent"

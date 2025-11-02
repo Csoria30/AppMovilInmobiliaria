@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -46,6 +47,7 @@ public class ListaInmueblesAdapter extends RecyclerView.Adapter<ListaInmueblesAd
         holder.tvTipo.setText(inmuebleActual.getTipo());
         holder.tvPrecio.setText("$ " + inmuebleActual.getValor());
         holder.tvHabitaciones.setText("Ambientes: " + inmuebleActual.getAmbientes());
+        holder.cbDisponible.setChecked(inmuebleActual.getDisponible());
 
         String urlImagen = ApiClient.URLBASE + inmuebleActual.getImagen().replace("\\", "/");
 
@@ -72,6 +74,7 @@ public class ListaInmueblesAdapter extends RecyclerView.Adapter<ListaInmueblesAd
         ImageView ivImagen;
         TextView tvDireccion, tvTipo, tvPrecio, tvHabitaciones;
         Button btnInformacion;
+        CheckBox cbDisponible;
         public ViewHolderInmueble(@NonNull View itemView){
             super(itemView);
             ivImagen = itemView.findViewById(R.id.ivImagen);
@@ -80,6 +83,7 @@ public class ListaInmueblesAdapter extends RecyclerView.Adapter<ListaInmueblesAd
             tvPrecio = itemView.findViewById(R.id.tvPrecio);
             tvHabitaciones = itemView.findViewById(R.id.tvHabitaciones);
             btnInformacion = itemView.findViewById(R.id.btnMasInfo);
+            cbDisponible = itemView.findViewById(R.id.cbDisponible);
         }
 
     }

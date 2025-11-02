@@ -98,7 +98,7 @@ public class InmuebleModel implements Serializable {
         this.imagen = imagen;
     }
 
-    public boolean isDisponible() {
+    public boolean getDisponible() {
         return disponible;
     }
 

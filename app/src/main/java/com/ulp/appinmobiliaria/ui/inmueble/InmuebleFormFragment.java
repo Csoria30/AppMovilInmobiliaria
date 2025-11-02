@@ -64,6 +64,8 @@ public class InmuebleFormFragment extends Fragment {
             binding.tvPrecio.setText(i.getValor() + "");
             binding.tvTipo.setText(i.getTipo());
             binding.tvAmbientes.setText(i.getAmbientes() + "");
+            binding.cbDisponible.setChecked(i.getDisponible());
+
 
             String urlImagen = ApiClient.URLBASE + i.getImagen().replace("\\", "/");
 
