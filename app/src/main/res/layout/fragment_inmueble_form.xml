@@ -108,6 +108,19 @@
                         android:text="Calle Falsa 123"
                         android:textColor="#2C3E50"
                         android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/etDireccion"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="center_vertical"
+                        android:inputType="textPostalAddress"
+                        android:paddingEnd="16dp"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <!-- Campo Tipo -->
@@ -147,6 +160,19 @@
                         android:text="Local"
                         android:textColor="#2C3E50"
                         android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/etTipo"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="center_vertical"
+                        android:inputType="textPostalAddress"
+                        android:paddingEnd="16dp"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <!-- Campo Ambientes -->
@@ -186,6 +212,19 @@
                         android:text="2"
                         android:textColor="#2C3E50"
                         android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/etAmbientes"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="center_vertical"
+                        android:inputType="number"
+                        android:paddingEnd="16dp"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <!-- Campo Precio -->
@@ -225,6 +264,19 @@
                         android:text="$3.000"
                         android:textColor="#2C3E50"
                         android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/etPrecio"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="center_vertical"
+                        android:inputType="numberDecimal"
+                        android:paddingEnd="16dp"
+                        android:textColor="#2C3E50"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
                 </LinearLayout>
                 <!-- Campo Disponible (CheckBox) -->
                 <LinearLayout
@@ -258,6 +310,7 @@
                         android:checked="true"
                         android:text="Habilitado"
                         android:textColor="#2C3E50"
+                        android:enabled="false"
                         android:paddingEnd="16dp"/>
                 </LinearLayout>
             </LinearLayout>

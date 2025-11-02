@@ -62,6 +62,13 @@ public class ApiClient {
                 @Header("Authorization") String token
         );
 
+        @PUT("api/Inmuebles/actualizar")
+        Call<InmuebleModel> actualizarInmueble(
+                @Header("Authorization") String token,
+                @Body InmuebleModel inmueble
+        );
+
+
 
     }
 }

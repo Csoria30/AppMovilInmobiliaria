@@ -258,7 +258,7 @@ public class PerfilViewModel extends AndroidViewModel {
                     Log.e("PerfilViewModel", "Error al actualizar: " + response.code());
                     String mensaje = ErrorHelper.obtenerMensajeError(response.code());
                     FormUIState state = UIStateHelper.PerfilUIStates.error(mensaje);
-                    state.actualizacionExitosa = false; // Opcional, si quieres dejarlo explícito
+                    state.actualizacionExitosa = false;
                     mUIState.setValue(state);
                 }
             }

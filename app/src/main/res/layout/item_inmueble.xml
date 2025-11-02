@@ -67,6 +67,7 @@
             android:layout_height="wrap_content"
             android:text="Disponible"
             android:textColor="#2C3E50"
+            android:enabled="false"
             android:layout_marginTop="8dp"/>
 
         <Button
