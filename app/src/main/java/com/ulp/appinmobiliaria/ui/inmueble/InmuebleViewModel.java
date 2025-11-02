@@ -27,6 +27,7 @@ public class InmuebleViewModel extends AndroidViewModel {
     private Context context;
     private MutableLiveData<List<InmuebleModel>> listaInmuebles = new MutableLiveData<>();
     private MutableLiveData<UIStateHelper.ListUIState> mUIState = new MutableLiveData<>();
+    private List<InmuebleModel> listaInmueblesCache = new ArrayList<>();
 
     public InmuebleViewModel(@NonNull Application application) {
         super(application);
@@ -67,6 +68,11 @@ public class InmuebleViewModel extends AndroidViewModel {
                     }
 
                     inmueblesPropios.sort((a, b) -> a.getDireccion().compareToIgnoreCase(b.getDireccion()));
+
+                    //Guardando en memoria
+                    listaInmueblesCache.clear();
+                    listaInmueblesCache.addAll(inmueblesPropios);
+
                     listaInmuebles.setValue(inmueblesPropios);
                     mUIState.setValue(UIStateHelper.ListUIState.conDatos(inmueblesPropios.size()));
                 } else {

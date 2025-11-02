@@ -47,8 +47,8 @@ public class PerfilViewModel extends AndroidViewModel {
     /**  ===== METODOS PÚBLICOS PRINCIPALES ===== */
 
     public void obtenerPerfil() {
-        //progessBar cargando perfil
         mUIState.setValue(UIStateHelper.PerfilUIStates.cargandoPerfil());
+        //progessBar cargando perfil
 
         //Obteniedo informacion del Token
         TokenHelper.ResultadoValidacion validacion = TokenHelper.validarToken(context);

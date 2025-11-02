@@ -1,13 +1,16 @@
 package com.ulp.appinmobiliaria.ui.inmueble;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -51,6 +54,13 @@ public class ListaInmueblesAdapter extends RecyclerView.Adapter<ListaInmueblesAd
                 .placeholder(R.drawable.ic_home_placeholder)
                 //.error(R.drawable.ic_home_placeholder)
                 .into(holder.ivImagen);
+
+
+        holder.btnInformacion.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putSerializable("inmueble", inmuebleActual);
+            Navigation.findNavController(v).navigate(R.id.action_inmuebleFragment_to_informacionInmueble, args);
+        });
     }
 
     @Override
@@ -61,6 +71,7 @@ public class ListaInmueblesAdapter extends RecyclerView.Adapter<ListaInmueblesAd
     public class ViewHolderInmueble extends RecyclerView.ViewHolder{
         ImageView ivImagen;
         TextView tvDireccion, tvTipo, tvPrecio, tvHabitaciones;
+        Button btnInformacion;
         public ViewHolderInmueble(@NonNull View itemView){
             super(itemView);
             ivImagen = itemView.findViewById(R.id.ivImagen);
@@ -68,6 +79,7 @@ public class ListaInmueblesAdapter extends RecyclerView.Adapter<ListaInmueblesAd
             tvTipo = itemView.findViewById(R.id.tvTipo);
             tvPrecio = itemView.findViewById(R.id.tvPrecio);
             tvHabitaciones = itemView.findViewById(R.id.tvHabitaciones);
+            btnInformacion = itemView.findViewById(R.id.btnMasInfo);
         }
 
     }
