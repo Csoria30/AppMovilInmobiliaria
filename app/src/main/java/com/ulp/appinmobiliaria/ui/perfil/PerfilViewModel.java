@@ -44,11 +44,11 @@ public class PerfilViewModel extends AndroidViewModel {
         return mUIState;
     }
 
-    /**  ===== METODOS PÚBLICOS PRINCIPALES ===== */
+    //  ===== METODOS  PRINCIPALES =====
 
     public void obtenerPerfil() {
-        mUIState.setValue(UIStateHelper.PerfilUIStates.cargandoPerfil());
         //progessBar cargando perfil
+        mUIState.setValue(UIStateHelper.FormUIState.cargando());
 
         //Obteniedo informacion del Token
         TokenHelper.ResultadoValidacion validacion = TokenHelper.validarToken(context);
@@ -68,7 +68,8 @@ public class PerfilViewModel extends AndroidViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     propietarioActual = response.body();
                     mPropietario.postValue(propietarioActual);
-                    mUIState.postValue(UIStateHelper.PerfilUIStates.modoVista(false));
+
+                    mUIState.postValue(UIStateHelper.PerfilUIStates.inicial()); // Modo lectura
                 } else {
                     String mensaje = ErrorHelper.obtenerMensajeError(response.code());
                     mUIState.postValue(UIStateHelper.PerfilUIStates.error(mensaje));
@@ -98,16 +99,23 @@ public class PerfilViewModel extends AndroidViewModel {
     }
 
     public void cambiarModoEdicion() {
-        FormUIState state = UIStateHelper.PerfilUIStates.modoEdicion(false);
+        FormUIState state = UIStateHelper.FormUIState.modoEdicion();
+
+        state.textoBoton = "Guardar Cambios";
+        state.mostrarBotonCancelar = true;
+        state.conBotonSecundario(false, false);
         state.mostrarCamposEditables = true;
         mUIState.setValue(state);
     }
 
     public void cancelarEdicion() {
-        FormUIState state = UIStateHelper.PerfilUIStates.modoVista(false);
+        FormUIState state = UIStateHelper.PerfilUIStates.inicial();
+
         state.mostrarCamposEditables = false;
+        state.mostrarBotonCancelar = false;
+        state.conBotonSecundario(true, true);
+
         mUIState.setValue(state);
-        Log.d("PerfilViewModel", "Cancelando edición");
     }
 
     public void guardarCambios(PropietarioModel propietario) {
@@ -147,41 +155,44 @@ public class PerfilViewModel extends AndroidViewModel {
 
     /** =====  VALIDACIONES ===== */
     private boolean validarCamposConHelpers(PropietarioModel propietario) {
-        // Helper Validacion: nombre
-        if (!ValidationHelper.esCampoValido(propietario.getNombre())) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El nombre es obligatorio", "nombre"));
+        if (propietario == null) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.error("Datos del propietario inválidos"));
             return false;
         }
 
-        if (propietario.getNombre().trim().length() < 2) {
+        // Sanitizar y reutilizar
+        String nombre = ValidationHelper.sanitizar(propietario.getNombre());
+        String apellido = ValidationHelper.sanitizar(propietario.getApellido());
+        String dni = ValidationHelper.sanitizar(propietario.getDni());
+        String email = ValidationHelper.sanitizar(propietario.getEmail());
+        String telefono = ValidationHelper.sanitizar(propietario.getTelefono());
+
+        // Nombre
+        if (!ValidationHelper.tieneLongitudMinima(nombre, 2)) {
             mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El nombre debe tener al menos 2 caracteres", "nombre"));
             return false;
         }
 
-        // Helper Validacion: apellido
-        if (!ValidationHelper.esCampoValido(propietario.getApellido())) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El apellido es obligatorio", "apellido"));
-            return false;
-        }
-        if (propietario.getApellido().trim().length() < 2) {
+        // Apellido
+        if (!ValidationHelper.tieneLongitudMinima(apellido, 2)) {
             mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El apellido debe tener al menos 2 caracteres", "apellido"));
             return false;
         }
 
-        // Helper Validacion: Dni
-        if (!ValidationHelper.esDniValido(propietario.getDni())) {
+        // DNI
+        if (!ValidationHelper.esDniValido(dni)) {
             mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El DNI debe tener entre 7 y 8 dígitos", "dni"));
             return false;
         }
 
-        // Helper Validacion: Email
-        if (!ValidationHelper.esEmailValido(propietario.getEmail())) {
+        // Email
+        if (!ValidationHelper.esEmailValido(email)) {
             mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El formato del email no es válido", "email"));
             return false;
         }
 
-        // Helper Validacion: telefono
-        if (!ValidationHelper.esTelefonoValido(propietario.getTelefono())) {
+        // Teléfono
+        if (!ValidationHelper.esTelefonoValido(telefono)) {
             mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El teléfono debe tener entre 8 y 15 dígitos", "telefono"));
             return false;
         }
@@ -197,9 +208,9 @@ public class PerfilViewModel extends AndroidViewModel {
         boolean modoEdicion = uiState != null && uiState.mostrarCamposEditables;
 
         if (modoEdicion) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.modoEdicion(false));
+            mUIState.setValue(UIStateHelper.FormUIState.modoVista());
         } else {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.modoVista(false));
+            mUIState.setValue(UIStateHelper.FormUIState.modoEdicion());
         }
     }
 
@@ -237,7 +248,7 @@ public class PerfilViewModel extends AndroidViewModel {
             return;
         }
 
-        mUIState.setValue(UIStateHelper.PerfilUIStates.guardandoCambios());
+        mUIState.setValue(UIStateHelper.PerfilUIStates.guardandoPerfil());
 
         ApiClient.InmobiliariaService api = ApiClient.getApiInmobiliaria();
         Call<PropietarioModel> call = api.actualizarPerfil(validacion.tokenBearer, propietario);
@@ -247,19 +258,21 @@ public class PerfilViewModel extends AndroidViewModel {
             public void onResponse(Call<PropietarioModel> call, Response<PropietarioModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     propietarioActual = response.body();
-                    mPropietario.setValue(propietarioActual);
+                    mPropietario.postValue(propietarioActual);
 
                     // Cambiar a modo vista con éxito
-                    FormUIState state = UIStateHelper.PerfilUIStates.exitoGuardado();
+                    FormUIState state = UIStateHelper.PerfilUIStates.perfilGuardado();
                     state.actualizacionExitosa = true;
                     state.mostrarCamposEditables = false;
-                    mUIState.setValue(state);
+                    state.conCarga(false);
+                    state.conBotonSecundario(true, true);
+                    mUIState.postValue(state);
                 } else {
                     Log.e("PerfilViewModel", "Error al actualizar: " + response.code());
                     String mensaje = ErrorHelper.obtenerMensajeError(response.code());
                     FormUIState state = UIStateHelper.PerfilUIStates.error(mensaje);
                     state.actualizacionExitosa = false;
-                    mUIState.setValue(state);
+                    mUIState.postValue(state);
                 }
             }
 
@@ -268,7 +281,7 @@ public class PerfilViewModel extends AndroidViewModel {
                 String mensaje = ErrorHelper.obtenerMensajeConexion(t);
                 FormUIState state = UIStateHelper.PerfilUIStates.error(mensaje);
                 state.actualizacionExitosa = false;
-                mUIState.setValue(state);
+                mUIState.postValue(state);
                 Log.e("PerfilViewModel", "Error de conexión: " + t.getMessage());
             }
         });

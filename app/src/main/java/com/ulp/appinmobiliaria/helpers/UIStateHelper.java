@@ -2,6 +2,10 @@ package com.ulp.appinmobiliaria.helpers;
 
 import com.ulp.appinmobiliaria.R;
 
+/**
+ * Clase helper para manejar estados de UI en la aplicación.
+ * Proporciona estados base para formularios y listas.
+ */
 public class UIStateHelper {
 
     /** === CLASE BASE === */
@@ -12,16 +16,14 @@ public class UIStateHelper {
         public boolean mostrarToast;
         public boolean cargando;
 
-        /**
-         * NINGUNO: Sin mensaje
-         * INFO: Informacion General - Azul
-         * SUCCESS: Exito - Verde
-         * ERROR: - Error critico - Rojo
-         * VALIDATION: Error de validacion - Naranja
-         * WARNING: Advertencia - Amarillo
-         * */
+        /** === TIPOS DE MENSAJE === */
         public enum TipoMensaje {
-            NINGUNO, INFO, SUCCESS, ERROR, VALIDATION, WARNING
+            NINGUNO,    // Sin mensaje
+            INFO,       // Información General - Azul
+            SUCCESS,    // Éxito - Verde
+            ERROR,      // Error crítico - Rojo
+            VALIDATION, // Error de validación - Naranja
+            WARNING     // Advertencia - Amarillo
         }
 
         public BaseUIState() {
@@ -57,7 +59,10 @@ public class UIStateHelper {
     }
 
 
-    /** === UIState : Formularios Editables === */
+    /**
+     * Estado base para todos los formularios editables.
+     * Maneja la visibilidad de campos, botones y mensajes.
+     */
     public static class FormUIState extends BaseUIState {
         public boolean mostrarCamposEditables;
         public boolean mostrarCamposVisualizacion;
@@ -104,6 +109,125 @@ public class UIStateHelper {
             this.habilitarBotonSecundario = habilitar && !cargando;
             return this;
         }
+
+        public static FormUIState modoVista(String textoBoton, int icono) {
+            FormUIState state = new FormUIState(
+                    false,
+                    textoBoton,
+                    icono,
+                    true
+            );
+            state.mostrarBotonSecundario = true;
+            return state;
+        }
+        public static FormUIState modoVista() {
+            return modoVista("Editar", android.R.drawable.ic_menu_edit);
+        }
+        public static FormUIState modoEdicion(String textoBoton, int icono) {
+            FormUIState state = new FormUIState(
+                    true,
+                    textoBoton,
+                    icono,
+                    true
+            );
+            return state;
+        }
+        public static FormUIState modoEdicion() {
+            return modoEdicion("Guardar", android.R.drawable.ic_menu_save);
+        }
+        public static FormUIState errorValidacion(String mensaje, String campo) {
+            FormUIState state = new FormUIState(
+                    true,
+                    "Guardar",
+                    android.R.drawable.ic_menu_save,
+                    true
+            );
+            state.conMensaje(mensaje, TipoMensaje.VALIDATION);
+            state.campoError = campo;
+            return state;
+        }
+
+        public static FormUIState guardando(String mensaje) {
+            FormUIState state = new FormUIState(
+                    true,
+                    "Guardando...",
+                    android.R.drawable.ic_popup_sync,
+                    false
+            );
+            state.conCarga(true);
+            state.conMensaje(mensaje, TipoMensaje.INFO);
+            return state;
+        }
+
+        public static FormUIState exitoGuardado(String mensaje, String textoBoton) {
+            FormUIState state = new FormUIState(
+                    false,
+                    textoBoton != null ? textoBoton : "Editar",
+                    android.R.drawable.ic_menu_edit,
+                    true
+            );
+            state.conMensaje(mensaje, TipoMensaje.SUCCESS);
+            state.conToast(true);
+            state.actualizacionExitosa = true;
+            return state;
+        }
+
+        public void cambiarModoEdicion(boolean modoEdicion) {
+            this.mostrarCamposEditables = modoEdicion;
+            this.mostrarCamposVisualizacion = !modoEdicion;
+            this.mostrarBotonCancelar = modoEdicion;
+        }
+
+        public void actualizarBotones(String texto, int icono, boolean habilitado) {
+            this.textoBoton = texto;
+            this.iconoBoton = icono;
+            this.botonHabilitado = habilitado && !cargando;
+        }
+
+        public void limpiarError() {
+            this.campoError = null;
+            this.mensaje = null;
+            this.tipoMensaje = TipoMensaje.NINGUNO;
+        }
+
+        public static FormUIState error(String mensaje) {
+            FormUIState state = new FormUIState(
+                    false,
+                    "Reintentar",
+                    android.R.drawable.ic_menu_rotate,
+                    true
+            );
+            state.conBotonSecundario(false, false);
+            state.conCarga(false);
+            state.conMensaje(mensaje, TipoMensaje.ERROR);
+            return state;
+        }
+
+        public static FormUIState cargando() {
+            FormUIState state = new FormUIState(
+                    false,
+                    "Cargando...",
+                    android.R.drawable.ic_popup_sync,
+                    false
+            );
+            state.conBotonSecundario(false, false);
+            state.conCarga(true);
+            return state;
+        }
+
+        // Sobrecarga: permitir texto de botón personalizado
+        public static FormUIState cargando(String textoBoton) {
+            FormUIState state = new FormUIState(
+                    false,
+                    textoBoton != null && !textoBoton.isEmpty() ? textoBoton : "Cargando...",
+                    android.R.drawable.ic_popup_sync,
+                    false
+            );
+            state.conBotonSecundario(false, false);
+            state.conCarga(true);
+            return state;
+        }
+
     }
 
     /** === UIState: Listas (Inmuebles  Contratos) === */
@@ -150,145 +274,63 @@ public class UIStateHelper {
 
 
     /** === FACTORY METHODS PARA ESTADOS COMUNES === */
-    public static class PerfilUIStates {
+    public static class PerfilUIStates extends FormUIState {
 
-        /** Estado para visualizar datos del perfil sin posibilidad de edición */
-        public static FormUIState modoVista(boolean cargando) {
-            FormUIState state = new FormUIState(
-                    false,
-                    "Editar Perfil",
-                    android.R.drawable.ic_menu_edit,
-                    !cargando
-            );
-            state.conBotonSecundario(true, !cargando);
-            state.conCarga(cargando);
-            return state;
+        public PerfilUIStates(boolean modoEdicion, String textoBoton, int iconoBoton, boolean habilitado) {
+            super(modoEdicion, textoBoton, iconoBoton, habilitado);
         }
 
-        /** Estado para editar campos del perfil con controles de edición activos */
-        public static FormUIState modoEdicion(boolean cargando) {
-            FormUIState state = new FormUIState(
-                    true,
-                    "Guardar Cambios",
-                    android.R.drawable.ic_menu_save,
-                    !cargando
-            );
-            state.conBotonSecundario(false, false);
-            state.conCarga(cargando);
-            return state;
-        }
-
-        /** Estado cuando hay errores en la validación de campos del formulario */
-        public static FormUIState errorValidacion(String mensaje, String campoError) {
-            FormUIState state = new FormUIState(
-                    true,
-                    "Guardar Cambios",
-                    android.R.drawable.ic_menu_save,
-                    true
-            );
-            state.conBotonSecundario(false, false);
-            state.conCarga(false);
-            state.conMensaje(mensaje, BaseUIState.TipoMensaje.VALIDATION);
-            state.campoError = campoError;
-            return state;
-        }
-
-        /** Estado mientras se están cargando los datos del perfil desde el servidor */
-        public static FormUIState cargandoPerfil() {
-            FormUIState state = new FormUIState(
-                    false,
-                    "Cargando...",
-                    android.R.drawable.ic_popup_sync,
-                    false
-            );
-            state.conBotonSecundario(false, false);
-            state.conCarga(true);
-            //state.conMensaje("Cargando perfil...", BaseUIState.TipoMensaje.INFO);
-            return state;
-        }
-
-        /** Estado mientras se están enviando los cambios del perfil al servidor */
-        public static FormUIState guardandoCambios() {
-            FormUIState state = new FormUIState(
-                    true,
-                    "Guardando...",
-                    android.R.drawable.ic_popup_sync,
-                    false
-            );
-            state.conBotonSecundario(false, false);
-            state.conCarga(true);
-            state.conMensaje("Guardando cambios...", BaseUIState.TipoMensaje.INFO);
-            return state;
-        }
-
-        /** Estado cuando los cambios del perfil se guardaron correctamente */
-        public static FormUIState exitoGuardado() {
-            FormUIState state = new FormUIState(
-                    false,
-                    "Editar Perfil",
-                    android.R.drawable.ic_menu_edit,
-                    true
-            );
-            state.conBotonSecundario(true, true);
-            state.conCarga(false);
-            state.conMensaje("Perfil actualizado correctamente", BaseUIState.TipoMensaje.SUCCESS);
-            state.conToast(true);
-            state.actualizacionExitosa = true;
-            return state;
-        }
-
-        /** Estado para errores generales de conexión, servidor o token */
-        public static FormUIState error(String mensaje) {
-            FormUIState state = new FormUIState(
-                    false,
-                    "Reintentar",
-                    android.R.drawable.ic_menu_rotate,
-                    true
-            );
-            state.conBotonSecundario(false, false);
-            state.conCarga(false);
-            state.conMensaje(mensaje, BaseUIState.TipoMensaje.ERROR);
-            return state;
-        }
-
-        /** Estado para errores específicos de token o autorización */
-        public static FormUIState errorToken(String mensaje) {
-            FormUIState state = new FormUIState(
-                    false,
-                    "Iniciar Sesión",
-                    android.R.drawable.ic_lock_idle_lock,
-                    true
-            );
-            state.conBotonSecundario(false, false);
-            state.conCarga(false);
-            state.conMensaje(mensaje, BaseUIState.TipoMensaje.ERROR);
-            return state;
-        }
-
-        /** Estado inicial cuando se abre el perfil */
         public static FormUIState inicial() {
-            FormUIState state = new FormUIState(
-                    false,
-                    "Cargar Perfil",
-                    R.drawable.ic_menu_refresh,
-                    true //Btn habilitado Click
-            );
-            state.conBotonSecundario(false, false);      //Btn Secundario
-            state.conCarga(false);                             // ProgressBar
-            return state;
+            return modoVista("Editar Perfil", android.R.drawable.ic_menu_edit);
         }
 
-        /** Estado cuando no hay datos de perfil cargados */
-        public static FormUIState sinDatos() {
-            FormUIState state = new FormUIState(
-                    false,
-                    "Cargar Perfil",
-                    R.drawable.ic_menu_refresh,
-                    true                                    //Btn habilitado Click
-            );
-            state.conBotonSecundario(false, false);
-            state.conCarga(false);
-            state.conMensaje("No se pudieron cargar los datos del perfil", BaseUIState.TipoMensaje.WARNING);
+        public static FormUIState guardandoPerfil() {
+            return guardando("Guardando cambios del perfil...");
+        }
+
+        public static FormUIState perfilGuardado() {
+            return exitoGuardado("Perfil actualizado correctamente", "Editar Perfil");
+        }
+
+        public static FormUIState errorCampoVacio(String campo) {
+            return errorValidacion("El campo " + campo + " es obligatorio", campo);
+        }
+
+        public static FormUIState cancelarEdicion() {
+            FormUIState state = inicial();
+            state.mostrarToast = true;
+            state.mensaje = "Edición cancelada";
+            state.tipoMensaje = TipoMensaje.INFO;
+            return state;
+        }
+    }
+
+    public static class InmuebleUIState extends FormUIState {
+        public InmuebleUIState(boolean modoEdicion, String textoBoton, int iconoBoton, boolean habilitado) {
+            super(modoEdicion, textoBoton, iconoBoton, habilitado);
+        }
+
+        public static FormUIState inicial() {
+            return modoVista("Editar Inmueble", android.R.drawable.ic_menu_edit);
+        }
+
+        public static FormUIState guardandoInmueble() {
+            return guardando("Guardando datos del inmueble...");
+        }
+
+        public static FormUIState inmuebleGuardado() {
+            return exitoGuardado("Inmueble actualizado correctamente", "Editar Inmueble");
+        }
+
+        public static FormUIState errorCampoInvalido(String campo, String razon) {
+            return errorValidacion("El campo " + campo + " " + razon, campo);
+        }
+
+        public static FormUIState cancelarCreacion() {
+            FormUIState state = inicial();
+            state.mostrarToast = true;
+            state.mensaje = "Creación cancelada";
+            state.tipoMensaje = TipoMensaje.INFO;
             return state;
         }
     }

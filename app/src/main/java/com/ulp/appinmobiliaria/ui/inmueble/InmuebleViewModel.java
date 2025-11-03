@@ -26,21 +26,33 @@ import retrofit2.Response;
 public class InmuebleViewModel extends AndroidViewModel {
     private Context context;
     private MutableLiveData<List<InmuebleModel>> listaInmuebles = new MutableLiveData<>();
-    private MutableLiveData<UIStateHelper.ListUIState> mUIState = new MutableLiveData<>();
+    private MutableLiveData<UIStateHelper.ListUIState> mUIStateLista = new MutableLiveData<>();
+    private MutableLiveData<UIStateHelper.FormUIState> mUIStateForm = new MutableLiveData<>();
     private List<InmuebleModel> listaInmueblesCache = new ArrayList<>();
 
+    // ===== CONSTRUCTOR =====
     public InmuebleViewModel(@NonNull Application application) {
         super(application);
         this.context = getApplication();
     }
 
+    // ===== GETTERS PARA LIVEDATA =====
     public LiveData<List<InmuebleModel>> getListaInmuebles() {
         return listaInmuebles;
     }
 
+    public LiveData<UIStateHelper.ListUIState> getmUIState() {
+        return mUIStateLista;
+    }
+
+    public LiveData<UIStateHelper.FormUIState> getmUIStateForm() {
+        return mUIStateForm;
+    }
+
+    //  ===== METODOS  PRINCIPALES =====
     public void cargarInmuebles(){
         //progessBar cargando perfil
-        mUIState.setValue(UIStateHelper.ListUIState.cargando());
+        mUIStateForm.setValue(UIStateHelper.FormUIState.cargando("Cargando inmuebles"));
 
         // Obtener token
         TokenHelper.ResultadoValidacion validacion = TokenHelper.validarToken(context);
@@ -74,7 +86,12 @@ public class InmuebleViewModel extends AndroidViewModel {
                     listaInmueblesCache.addAll(inmueblesPropios);
 
                     listaInmuebles.postValue(inmueblesPropios);
-                    mUIState.postValue(UIStateHelper.ListUIState.conDatos(inmueblesPropios.size()));
+                    mUIStateLista.postValue(UIStateHelper.ListUIState.conDatos(inmueblesPropios.size()));
+
+                    //UI
+                    UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.inicial();
+                    state.conCarga(false);
+                    mUIStateForm.postValue(state);
                 } else {
                     String mensaje = ErrorHelper.obtenerMensajeError(response.code());
                     // mUIState.setValue(UIStateHelper.InmueblesUIStates.error(mensaje));

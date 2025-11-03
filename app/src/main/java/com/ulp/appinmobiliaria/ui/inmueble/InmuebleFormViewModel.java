@@ -105,14 +105,12 @@ public class InmuebleFormViewModel extends AndroidViewModel {
     }
 
     public void cambiarModoEdicion() {
-        UIStateHelper.FormUIState state = UIStateHelper.PerfilUIStates.modoEdicion(false);
-        state.mostrarCamposEditables = true;
+        UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.modoEdicion();
         mUIState.setValue(state);
     }
 
     public void cancelarEdicion() {
-        UIStateHelper.FormUIState state = UIStateHelper.PerfilUIStates.modoVista(false);
-        state.mostrarCamposEditables = false;
+        UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.inicial();
         mUIState.setValue(state);
     }
 
@@ -183,14 +181,13 @@ public class InmuebleFormViewModel extends AndroidViewModel {
     }
     // ===== MÉTODOS PRIVADOS - UTILIDADES =====
     private void actualizarUIState() {
-        UIStateHelper.FormUIState uiState = mUIState.getValue();
-        boolean modoEdicion = uiState != null && uiState.mostrarCamposEditables;
+        UIStateHelper.FormUIState current = mUIState.getValue();
+        boolean modoEdicion = current != null && current.mostrarCamposEditables;
 
-        if (modoEdicion) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.modoEdicion(false));
-        } else {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.modoVista(false));
-        }
+        // Alterna entre modo edicion y modo vista
+        UIStateHelper.FormUIState next = modoEdicion
+                ? UIStateHelper.FormUIState.modoVista()
+                : UIStateHelper.FormUIState.modoEdicion();
     }
 
     private InmuebleModel crearInmuebleActualizado(InmuebleModel nuevosDatos) {
@@ -226,7 +223,7 @@ public class InmuebleFormViewModel extends AndroidViewModel {
             return;
         }
 
-        mUIState.setValue(UIStateHelper.PerfilUIStates.guardandoCambios());
+        mUIState.setValue(UIStateHelper.InmuebleUIState.guardandoInmueble());
 
         ApiClient.InmobiliariaService api = ApiClient.getApiInmobiliaria();
         Call<InmuebleModel> call = api.actualizarInmueble(validacion.tokenBearer, inmueble);
@@ -238,7 +235,7 @@ public class InmuebleFormViewModel extends AndroidViewModel {
                     mInmueble.setValue(response.body());
 
                     //Cambiar a modo vista con exito
-                    UIStateHelper.FormUIState state = UIStateHelper.PerfilUIStates.exitoGuardado();
+                    UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.inmuebleGuardado();
                     state.actualizacionExitosa = true;
                     state.mostrarCamposEditables = false;
                     mUIState.setValue(state);
@@ -320,7 +317,7 @@ public class InmuebleFormViewModel extends AndroidViewModel {
                     public void onResponse(Call<InmuebleCrearDTO> call, Response<InmuebleCrearDTO> response) {
                         if(response.isSuccessful()){
                             if (response.body() != null){
-                                UIStateHelper.FormUIState state = UIStateHelper.PerfilUIStates.exitoGuardado();
+                                UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.inmuebleGuardado();
                                 state.actualizacionExitosa = true;
                                 mUIState.postValue(state);
                             }else{

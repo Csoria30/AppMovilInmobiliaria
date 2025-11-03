@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.ulp.appinmobiliaria.R;
 import com.ulp.appinmobiliaria.databinding.FragmentInmuebleBinding;
+import com.ulp.appinmobiliaria.helpers.UIStateHelper;
 import com.ulp.appinmobiliaria.model.InmuebleModel;
 
 import java.util.ArrayList;
@@ -38,12 +39,14 @@ public class InmuebleFragment extends Fragment {
         binding = FragmentInmuebleBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        configurarObservers();
+        configurarEventos();
 
-        // Configura el click del botón flotante
-        binding.fab.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_inmuebleFragment_to_informacionInmueble);
-        });
+        viewModel.cargarInmuebles();
+        return root;
+    }
 
+    private void configurarObservers(){
         //Observer
         viewModel.getListaInmuebles().observe(getViewLifecycleOwner(), new Observer<List<InmuebleModel>>() {
             @Override
@@ -65,9 +68,40 @@ public class InmuebleFragment extends Fragment {
             }
         });
 
+        //Actualizar UI
+        viewModel.getmUIStateForm().observe(getViewLifecycleOwner(), uiState -> {
+            actualizarUI(uiState);
+        });
+    }
 
-        viewModel.cargarInmuebles();
-        return root;
+    private void configurarEventos(){
+        // Configura el click del botón flotante
+        binding.fab.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_inmuebleFragment_to_informacionInmueble);
+        });
+    }
+
+    private void actualizarUI(UIStateHelper.FormUIState uiState){
+        configurarCarga(uiState.cargando, uiState.textoBoton);
+    }
+
+    private void configurarCarga(boolean cargando, String texto) {
+        // ProgressBar
+        if (cargando) {
+            // Mostrar overlay completo
+            binding.loadingOverlay.setVisibility(View.VISIBLE);
+            binding.tvLoadingText.setText("Cargando Inmuebles");
+        } else {
+            // Ocultar overlay
+            binding.loadingOverlay.setVisibility(View.GONE);
+        }
+    }
+
+
+    private void mostrarErrorEnCampo(String campo, String mensaje) {
+        switch (campo) {
+
+        }
     }
 
     @Override

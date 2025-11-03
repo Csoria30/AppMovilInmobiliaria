@@ -57,7 +57,7 @@ public class CambiarContrasenaViewModel extends AndroidViewModel {
         }
 
         // Estado de carga
-        uiState.setValue(UIStateHelper.PerfilUIStates.guardandoCambios());
+        uiState.setValue(UIStateHelper.PerfilUIStates.guardandoPerfil());
 
         // Obtener token
         TokenHelper.ResultadoValidacion validacion = TokenHelper.validarToken(context);
@@ -74,7 +74,7 @@ public class CambiarContrasenaViewModel extends AndroidViewModel {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    uiState.postValue(UIStateHelper.PerfilUIStates.exitoGuardado());
+                    uiState.postValue(UIStateHelper.PerfilUIStates.guardandoPerfil());
                 } else {
                     uiState.postValue(UIStateHelper.PerfilUIStates.error("Error al cambiar la contraseña"));
                 }
@@ -91,7 +91,7 @@ public class CambiarContrasenaViewModel extends AndroidViewModel {
 
 
     public void limpiarEstado() {
-        uiState.setValue(UIStateHelper.PerfilUIStates.sinDatos());
+        //uiState.setValue(UIStateHelper.PerfilUIStates.err
     }
 
 }

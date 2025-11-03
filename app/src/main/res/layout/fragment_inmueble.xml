@@ -43,6 +43,7 @@
             android:elevation="16dp" />
 
         <TextView
+            android:id="@+id/tvLoadingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
