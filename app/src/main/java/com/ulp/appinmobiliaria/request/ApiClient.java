@@ -2,11 +2,14 @@ package com.ulp.appinmobiliaria.request;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ulp.appinmobiliaria.model.InmuebleCrearDTO;
 import com.ulp.appinmobiliaria.model.InmuebleModel;
 import com.ulp.appinmobiliaria.model.PropietarioModel;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -18,6 +21,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 
 public class ApiClient {
     public static final String URLBASE = "https://inmobiliariaulp-amb5hwfqaraweyga.canadacentral-01.azurewebsites.net/";
@@ -66,6 +70,14 @@ public class ApiClient {
         Call<InmuebleModel> actualizarInmueble(
                 @Header("Authorization") String token,
                 @Body InmuebleModel inmueble
+        );
+
+        @Multipart
+        @POST("api/Inmuebles/cargar")
+        Call<InmuebleCrearDTO> cargarInmueble(
+                @Header("Authorization") String token,
+                @Part MultipartBody.Part imagen,
+                @Part("inmueble") RequestBody inmuebleJson
         );
 
 

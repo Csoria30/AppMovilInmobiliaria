@@ -1,5 +1,10 @@
 package com.ulp.appinmobiliaria.ui.inmueble;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -7,18 +12,22 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Application;
+import android.app.UiModeManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.ulp.appinmobiliaria.R;
@@ -37,6 +46,8 @@ import retrofit2.Call;
 public class InmuebleFormFragment extends Fragment {
     private FragmentInmuebleFormBinding binding;
     private InmuebleFormViewModel viewModel;
+    private ActivityResultLauncher<Intent> activityResultLauncher;
+    private Intent intent;
 
 
     public static InmuebleFormFragment newInstance(){
@@ -50,6 +61,7 @@ public class InmuebleFormFragment extends Fragment {
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(InmuebleFormViewModel.class);
         binding = FragmentInmuebleFormBinding.inflate(inflater, container, false);
 
+        abrirGaleria();
         configurarObservers();
         configurarEventos();
 
@@ -63,17 +75,29 @@ public class InmuebleFormFragment extends Fragment {
         viewModel.getmInmueble().observe( getViewLifecycleOwner(), i ->{
             llenarCampos();
 
-            String urlImagen = ApiClient.URLBASE + i.getImagen().replace("\\", "/");
-            Glide.with(this)
-                    .load(urlImagen)
-                    .placeholder(R.drawable.ic_home_placeholder)
-                    //.error(R.drawable.ic_home_placeholder)
-                    .into(binding.ivAvatar);
+            if(i != null && i.getImagen() != null){
+                String urlImagen = ApiClient.URLBASE + i.getImagen().replace("\\", "/");
+                Glide.with(this)
+                        .load(urlImagen)
+                        .placeholder(R.drawable.ic_home_placeholder)
+                        //.error(R.drawable.ic_home_placeholder)
+                        .into(binding.ivAvatar);
+            }else{
+                Glide.with(this)
+                        .load(R.drawable.ic_home_placeholder)
+                        .into(binding.ivAvatar);
+            }
+
         });
 
         viewModel.getmUIState().observe(getViewLifecycleOwner(), uiState -> {
             actualizarUI(uiState);
         });
+
+        viewModel.getmURI().observe(getViewLifecycleOwner(), uri -> {
+            binding.ivAvatar.setImageURI(uri);
+        });
+
     }
     private void configurarEventos() {
         binding.btnEditarInmueble.setOnClickListener( v ->{
@@ -95,6 +119,23 @@ public class InmuebleFormFragment extends Fragment {
 
         binding.btnCancelar.setOnClickListener(v -> {
             viewModel.cancelarEdicion();
+        });
+
+        binding.btnCargarImagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityResultLauncher.launch(intent);
+            }
+        });
+
+        binding.btnGuardar.setOnClickListener( i -> {
+            viewModel.cargarInmueble(
+                    binding.etDireccion.getText().toString(),
+                    binding.etUso.getText().toString(),
+                    binding.etTipo.getText().toString(),
+                    binding.etAmbientes.getText().toString(),
+                    binding.etPrecio.getText().toString()
+            );
         });
 
     }
@@ -162,9 +203,11 @@ public class InmuebleFormFragment extends Fragment {
         int visibilidadEdit = modoEdicion ? View.VISIBLE : View.GONE;
         int visibilidadText = modoEdicion ? View.GONE : View.VISIBLE;
 
+
         // TextViews
         binding.tvAmbientes.setVisibility(visibilidadText);
         binding.tvTipo.setVisibility(visibilidadText);
+        binding.tvUso.setVisibility(visibilidadText);
         binding.tvPrecio.setVisibility(visibilidadText);
         binding.tvDireccion.setVisibility(visibilidadText);
 
@@ -172,11 +215,15 @@ public class InmuebleFormFragment extends Fragment {
         // EditTexts
         binding.etAmbientes.setVisibility(visibilidadEdit);
         binding.etTipo.setVisibility(visibilidadEdit);
+        binding.etUso.setVisibility(visibilidadEdit);
         binding.etPrecio.setVisibility(visibilidadEdit);
         binding.etDireccion.setVisibility(visibilidadEdit);
 
         // CheackBox
         binding.cbDisponible.setEnabled(modoEdicion);
+
+        boolean esNuevoInmueble = getArguments() == null;
+        binding.btnCargarImagen.setVisibility(esNuevoInmueble && modoEdicion ? View.VISIBLE : View.GONE);
 
         if (!modoEdicion) {
             limpiarErrores();
@@ -184,16 +231,25 @@ public class InmuebleFormFragment extends Fragment {
     }
 
     private void llenarCampos(){
-        binding.tvDireccion.setText(viewModel.getDireccion());
-        binding.tvTipo.setText(viewModel.getTipo());
-        binding.tvAmbientes.setText(viewModel.getAmbientes());
-        binding.tvPrecio.setText(viewModel.getValor());
-        binding.cbDisponible.setChecked(viewModel.getDisponible());
+        String direccion = viewModel.getDireccion();
+        String uso = viewModel.getUso();
+        String tipo = viewModel.getTipo();
+        String ambientes = viewModel.getAmbientes();
+        String precio = viewModel.getValor();
+        boolean disponible = viewModel.getDisponible();
 
-        binding.etDireccion.setText(viewModel.getDireccion());
-        binding.etTipo.setText(viewModel.getTipo());
-        binding.etAmbientes.setText(viewModel.getAmbientes());
-        binding.etPrecio.setText(viewModel.getValor());
+        binding.tvDireccion.setText(direccion);
+        binding.tvTipo.setText(tipo);
+        binding.tvUso.setText(uso);
+        binding.tvAmbientes.setText(ambientes);
+        binding.tvPrecio.setText(precio);
+        binding.cbDisponible.setChecked(disponible);
+
+        binding.etDireccion.setText(direccion);
+        binding.etUso.setText(uso);
+        binding.etTipo.setText(tipo);
+        binding.etAmbientes.setText(ambientes);
+        binding.etPrecio.setText(precio);
     }
 
 
@@ -209,4 +265,15 @@ public class InmuebleFormFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
+    private void abrirGaleria(){
+        intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                viewModel.recibirFoto(result);
+            }
+        });
+    }
+
 }
