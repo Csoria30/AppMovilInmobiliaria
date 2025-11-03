@@ -322,10 +322,10 @@ public class InmuebleFormViewModel extends AndroidViewModel {
                             if (response.body() != null){
                                 UIStateHelper.FormUIState state = UIStateHelper.PerfilUIStates.exitoGuardado();
                                 state.actualizacionExitosa = true;
-                                mUIState.setValue(state);
+                                mUIState.postValue(state);
                             }else{
                                 Log.e("API", "Response body es null");
-                                mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("Error: Respuesta vacía del servidor", "general"));
+                                mUIState.postValue(UIStateHelper.PerfilUIStates.errorValidacion("Error: Respuesta vacía del servidor", "general"));
                             }
                         }else{
                             Toast.makeText(context, "ERROR Creando Inmueble -_-", Toast.LENGTH_SHORT).show();

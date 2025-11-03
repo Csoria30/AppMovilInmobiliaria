@@ -74,15 +74,15 @@ public class CambiarContrasenaViewModel extends AndroidViewModel {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    uiState.setValue(UIStateHelper.PerfilUIStates.exitoGuardado());
+                    uiState.postValue(UIStateHelper.PerfilUIStates.exitoGuardado());
                 } else {
-                    uiState.setValue(UIStateHelper.PerfilUIStates.error("Error al cambiar la contraseña"));
+                    uiState.postValue(UIStateHelper.PerfilUIStates.error("Error al cambiar la contraseña"));
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                uiState.setValue(UIStateHelper.PerfilUIStates.error("Error de conexión: " + t.getMessage()));
+                uiState.postValue(UIStateHelper.PerfilUIStates.error("Error de conexión: " + t.getMessage()));
             }
         });
     }

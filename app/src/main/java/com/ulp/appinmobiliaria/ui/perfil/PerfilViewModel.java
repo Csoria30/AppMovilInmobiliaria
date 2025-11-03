@@ -67,11 +67,11 @@ public class PerfilViewModel extends AndroidViewModel {
             public void onResponse(Call<PropietarioModel> call, Response<PropietarioModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     propietarioActual = response.body();
-                    mPropietario.setValue(propietarioActual);
-                    mUIState.setValue(UIStateHelper.PerfilUIStates.modoVista(false));
+                    mPropietario.postValue(propietarioActual);
+                    mUIState.postValue(UIStateHelper.PerfilUIStates.modoVista(false));
                 } else {
                     String mensaje = ErrorHelper.obtenerMensajeError(response.code());
-                    mUIState.setValue(UIStateHelper.PerfilUIStates.error(mensaje));
+                    mUIState.postValue(UIStateHelper.PerfilUIStates.error(mensaje));
                     Log.e("PerfilViewModel", "Error en respuesta: " + response.code());
                 }
             }
@@ -79,7 +79,7 @@ public class PerfilViewModel extends AndroidViewModel {
             @Override
             public void onFailure(Call<PropietarioModel> call, Throwable t) {
                 String mensaje = ErrorHelper.obtenerMensajeConexion(t);
-                mUIState.setValue(UIStateHelper.PerfilUIStates.error(mensaje));
+                mUIState.postValue(UIStateHelper.PerfilUIStates.error(mensaje));
                 Log.e("PerfilViewModel", "Error de conexión: " + t.getMessage());
             }
         });

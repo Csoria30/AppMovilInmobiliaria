@@ -73,8 +73,8 @@ public class InmuebleViewModel extends AndroidViewModel {
                     listaInmueblesCache.clear();
                     listaInmueblesCache.addAll(inmueblesPropios);
 
-                    listaInmuebles.setValue(inmueblesPropios);
-                    mUIState.setValue(UIStateHelper.ListUIState.conDatos(inmueblesPropios.size()));
+                    listaInmuebles.postValue(inmueblesPropios);
+                    mUIState.postValue(UIStateHelper.ListUIState.conDatos(inmueblesPropios.size()));
                 } else {
                     String mensaje = ErrorHelper.obtenerMensajeError(response.code());
                     // mUIState.setValue(UIStateHelper.InmueblesUIStates.error(mensaje));
