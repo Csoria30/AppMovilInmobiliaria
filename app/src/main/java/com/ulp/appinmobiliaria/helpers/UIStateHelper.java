@@ -74,6 +74,8 @@ public class UIStateHelper {
         public String textoBoton;
         public int iconoBoton;
         public String campoError;
+        public boolean esNuevo;
+        public String textoBotonCancelar;
 
         public FormUIState(boolean modoEdicion, String textoBoton, int iconoBoton, boolean habilitado) {
             super();
@@ -83,8 +85,15 @@ public class UIStateHelper {
             this.iconoBoton = iconoBoton;
             this.botonHabilitado = habilitado;
             this.mostrarBotonCancelar = modoEdicion;
+            this.esNuevo = false;
+            this.textoBotonCancelar = "Cancelar"; //Valor Default
+
         }
 
+        public FormUIState conTextoBotonCancelar(String texto) {
+            this.textoBotonCancelar = texto;
+            return this;
+        }
         public FormUIState conMensaje(String mensaje, TipoMensaje tipo) {
             super.conMensaje(mensaje, tipo);
             return this;
@@ -228,6 +237,10 @@ public class UIStateHelper {
             return state;
         }
 
+        public FormUIState conEsNuevo(boolean esNuevo) {
+            this.esNuevo = esNuevo;
+            return this;
+        }
     }
 
     /** === UIState: Listas (Inmuebles  Contratos) === */

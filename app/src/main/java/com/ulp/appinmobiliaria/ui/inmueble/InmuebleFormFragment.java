@@ -20,6 +20,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -95,7 +96,13 @@ public class InmuebleFormFragment extends Fragment {
         });
 
         viewModel.getmURI().observe(getViewLifecycleOwner(), uri -> {
-            binding.ivAvatar.setImageURI(uri);
+            if (uri != null) {
+                binding.ivAvatar.setImageURI(uri);
+            } else {
+                Glide.with(requireContext())
+                        .load(R.drawable.ic_home_placeholder)
+                        .into(binding.ivAvatar);
+            }
         });
 
     }
@@ -118,7 +125,7 @@ public class InmuebleFormFragment extends Fragment {
         });
 
         binding.btnCancelar.setOnClickListener(v -> {
-            viewModel.cancelarEdicion();
+            Navigation.findNavController(v).navigate(R.id.action_informacionInmuble_to_listaInmuebles);
         });
 
         binding.btnCargarImagen.setOnClickListener(new View.OnClickListener() {
@@ -157,18 +164,34 @@ public class InmuebleFormFragment extends Fragment {
     }
 
     private void configurarBotones(UIStateHelper.FormUIState uiState) {
-        // Botón principal
-        binding.btnEditarInmueble.setText(uiState.textoBoton);
-        binding.btnEditarInmueble.setEnabled(uiState.botonHabilitado);
-        binding.btnEditarInmueble.setCompoundDrawablesWithIntrinsicBounds(
-                ContextCompat.getDrawable(getContext(), uiState.iconoBoton),
-                null, null, null //Evita superposicion de draw
-        );
+        boolean esNuevo = uiState.esNuevo;
+        boolean modoEdicion = uiState.mostrarCamposEditables;
+        boolean cargando = uiState.cargando;
+
+        //Btn Editar Guardar Solo visible modo edicion
+        binding.btnEditarInmueble.setVisibility(esNuevo ? View.GONE : View.VISIBLE);
+
+        if(!esNuevo){
+            binding.btnEditarInmueble.setText(uiState.textoBoton);
+            binding.btnEditarInmueble.setEnabled(uiState.botonHabilitado && !cargando);
+            binding.btnEditarInmueble.setCompoundDrawablesWithIntrinsicBounds(
+                    ContextCompat.getDrawable(requireContext(), uiState.iconoBoton),
+                    null, null, null
+            );
+        }
+
+        //Boton Crear / Solo visible Creacion
+        binding.btnGuardar.setVisibility(esNuevo ? View.VISIBLE : View.GONE);
+        binding.btnGuardar.setEnabled(!cargando && uiState.botonHabilitado);
 
         // Botón cancelar
-        binding.btnCancelar.setVisibility(
-                uiState.mostrarBotonCancelar ? View.VISIBLE : View.GONE
-        );
+        binding.btnCancelar.setVisibility(uiState.mostrarBotonCancelar ? View.VISIBLE : View.GONE);
+        binding.btnCancelar.setEnabled(!cargando);
+        binding.btnCancelar.setText(uiState.textoBotonCancelar);
+
+        //Cargar Imagen
+        binding.btnCargarImagen.setVisibility((uiState.mostrarCamposEditables && uiState.esNuevo) ? View.VISIBLE : View.GONE);
+        binding.btnCargarImagen.setEnabled(!uiState.cargando);
     }
 
     private void configurarCarga(boolean cargando) {
@@ -176,6 +199,7 @@ public class InmuebleFormFragment extends Fragment {
         if (cargando) {
             // Mostrar overlay completo
             binding.loadingOverlay.setVisibility(View.VISIBLE);
+            binding.tvLoadingText.setText("Cargamdo Informacion");
         } else {
             // Ocultar overlay
             binding.loadingOverlay.setVisibility(View.GONE);
@@ -245,11 +269,12 @@ public class InmuebleFormFragment extends Fragment {
         binding.tvPrecio.setText(precio);
         binding.cbDisponible.setChecked(disponible);
 
-        binding.etDireccion.setText(direccion);
-        binding.etUso.setText(uso);
-        binding.etTipo.setText(tipo);
-        binding.etAmbientes.setText(ambientes);
-        binding.etPrecio.setText(precio);
+        binding.etDireccion.setText(viewModel.getDireccion());
+        binding.etUso.setText(viewModel.getUso());
+        binding.etTipo.setText(viewModel.getTipo());
+        binding.etAmbientes.setText(viewModel.getAmbientes());
+        binding.etPrecio.setText(viewModel.getValor());
+        binding.cbDisponible.setChecked(viewModel.getDisponible());
     }
 
 

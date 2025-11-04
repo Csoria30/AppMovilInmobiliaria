@@ -79,16 +79,29 @@ public class InmuebleFormViewModel extends AndroidViewModel {
 
     public void obtenerInmuebleActual(Bundle inmuebleActual) {
         if(inmuebleActual != null && inmuebleActual.containsKey("inmueble")){
+            //progessBar cargando perfil
+            mUIState.setValue(UIStateHelper.FormUIState.cargando());
+
             InmuebleModel i = (InmuebleModel) inmuebleActual.getSerializable("inmueble");
 
             if(i != null)
                 this.mInmueble.setValue(i);
+
+            UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.inicial();
+            state.conCarga(false);
+            state.conEsNuevo(false);
+            mUIState.setValue(state);
         }else{
             //Creacion
             InmuebleModel nuevo = new InmuebleModel();
             nuevo.setDisponible(true);
             mInmueble.setValue(nuevo);
-            cambiarModoEdicion();
+
+            UIStateHelper.FormUIState state = UIStateHelper.FormUIState.modoEdicion();
+            state.conEsNuevo(true);
+            state.mostrarBotonCancelar = true;
+            mUIState.setValue(state);
+            //cambiarModoEdicion();
         }
     }
 
@@ -105,80 +118,40 @@ public class InmuebleFormViewModel extends AndroidViewModel {
     }
 
     public void cambiarModoEdicion() {
-        UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.modoEdicion();
+        UIStateHelper.FormUIState current = mUIState.getValue();
+        boolean esNuevo = current != null && current.esNuevo;
+
+        UIStateHelper.FormUIState state = UIStateHelper.FormUIState.modoEdicion();
+        state.conEsNuevo(esNuevo);
+        state.mostrarBotonCancelar = true;
         mUIState.setValue(state);
     }
 
     public void cancelarEdicion() {
-        UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.inicial();
-        mUIState.setValue(state);
+        UIStateHelper.FormUIState current = mUIState.getValue();
+        boolean esNuevo = current != null && current.esNuevo;
+
+        if(esNuevo){
+            UIStateHelper.FormUIState state = UIStateHelper.FormUIState.modoEdicion();
+            state.conEsNuevo(true);
+            state.mostrarBotonCancelar = false;
+            mUIState.setValue(state);
+        }else{
+            UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.inicial();
+            state.conEsNuevo(false);
+            mUIState.setValue(state);
+        }
     }
 
     public void guardarCambios(InmuebleModel inmueble) {
+        /** Validacion de campos con Helpers, se omiten dado que la api solo cambia estado del inmueble
         if (!validarCamposConHelpers(inmueble)) {
             return;
         }
+         */
         actualizarInmuble(inmueble);
     }
 
-    /** =====  VALIDACIONES ===== */
-    private boolean validarCamposConHelpers(InmuebleModel inmueble) {
-        // Helper Validacion: Direccion
-        if (inmueble.getDireccion() == null || inmueble.getDireccion().trim().length() < 2) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La direccion es obligatorio", "direccion"));
-            return false;
-        }
-
-        // Helper Validacion: Tipo
-        if (inmueble.getTipo() == null || inmueble.getTipo().trim().length() < 2) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El Tipo debe tener al menos 2 caracteres", "tipo"));
-            return false;
-        }
-
-        // Validación: Precio (mayor a 0)
-        if (inmueble.getValor() <= 0) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El precio debe ser mayor a 0", "precio"));
-            return false;
-        }
-
-        // Validación: Ambientes (mayor a 0)
-        if (inmueble.getAmbientes() <= 0) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La cantidad de ambientes debe ser mayor a 0", "ambiente"));
-            return false;
-        }
-
-        // Validacion OK - volver al modo edición normal
-        actualizarUIState();
-        return true;
-    }
-    private boolean validarCrearInmuebleDTO(InmuebleCrearDTO inmuebleCrearDTO){
-        if (inmuebleCrearDTO.getDireccion() == null || inmuebleCrearDTO.getDireccion().trim().length() < 2) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La direccion es obligatorio", "direccion"));
-            return false;
-        }
-
-        // Helper Validacion: Tipo
-        if (inmuebleCrearDTO.getTipo() == null || inmuebleCrearDTO.getTipo().trim().length() < 2) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El Tipo debe tener al menos 2 caracteres", "tipo"));
-            return false;
-        }
-
-        // Validación: Precio (mayor a 0)
-        if (inmuebleCrearDTO.getValor() <= 0) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El precio debe ser mayor a 0", "precio"));
-            return false;
-        }
-
-        // Validación: Ambientes (mayor a 0)
-        if (inmuebleCrearDTO.getAmbientes() <= 0) {
-            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La cantidad de ambientes debe ser mayor a 0", "ambiente"));
-            return false;
-        }
-
-        // Validacion OK - volver al modo edición normal
-        actualizarUIState();
-        return true;
-    }
     // ===== MÉTODOS PRIVADOS - UTILIDADES =====
     private void actualizarUIState() {
         UIStateHelper.FormUIState current = mUIState.getValue();
@@ -317,9 +290,13 @@ public class InmuebleFormViewModel extends AndroidViewModel {
                     public void onResponse(Call<InmuebleCrearDTO> call, Response<InmuebleCrearDTO> response) {
                         if(response.isSuccessful()){
                             if (response.body() != null){
+
+                                // Actualizar estado UI con mensaje
                                 UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.inmuebleGuardado();
                                 state.actualizacionExitosa = true;
-                                mUIState.postValue(state);
+                                state.conTextoBotonCancelar("Creado con Éxito");
+                                state.mostrarBotonCancelar = true;
+                                mUIState.setValue(state);
                             }else{
                                 Log.e("API", "Response body es null");
                                 mUIState.postValue(UIStateHelper.PerfilUIStates.errorValidacion("Error: Respuesta vacía del servidor", "general"));
@@ -343,6 +320,7 @@ public class InmuebleFormViewModel extends AndroidViewModel {
         }
     }
 
+
     private byte[] transformarImagen(){
         try{
             Uri uri = mURI.getValue();
@@ -358,30 +336,139 @@ public class InmuebleFormViewModel extends AndroidViewModel {
         }
     }
 
+    // === Confirnma creacion del inmueble
+
 
     /** ===== GETTERS PARA DATOS DEL PROPIETARIO =====
      *  Nota: Evitamos retornos nulos
      * */
+
+    //Reset Despues de la cracion
+    private void resetearCampos() {
+        InmuebleModel nuevo = new InmuebleModel();
+        nuevo.setDisponible(true);
+        mInmueble.setValue(nuevo);
+        mURI.setValue(null); // Resetear imagen
+    }
+
     public String getDireccion(){
-        return mInmueble.getValue() != null ? mInmueble.getValue().getDireccion() : "";
+        UIStateHelper.FormUIState state = mUIState.getValue();
+        InmuebleModel inmueble = mInmueble.getValue();
+
+        // Si actualizacionExitosa, retornar campos vacíos
+        if (state != null && state.actualizacionExitosa) {
+            return "";
+        }
+
+        return inmueble != null ? inmueble.getDireccion() : "";
     }
 
     public String getTipo() {
-        return mInmueble.getValue() != null ? mInmueble.getValue().getTipo() : "";
+        UIStateHelper.FormUIState state = mUIState.getValue();
+        InmuebleModel inmueble = mInmueble.getValue();
+
+        if (state != null && state.actualizacionExitosa) {
+            return "";
+        }
+
+        return inmueble != null ? inmueble.getTipo() : "";
+        //return mInmueble.getValue() != null ? mInmueble.getValue().getTipo() : "";
     }
     public String getUso(){
-        return mInmueble.getValue() != null ? mInmueble.getValue().getUso() : "";
+        UIStateHelper.FormUIState state = mUIState.getValue();
+        InmuebleModel inmueble = mInmueble.getValue();
+
+        if (state != null && state.actualizacionExitosa) {
+            return "";
+        }
+
+        return inmueble != null ? inmueble.getUso() : "";
     }
 
     public String getAmbientes() {
-        return mInmueble.getValue() != null ? String.valueOf(mInmueble.getValue().getAmbientes()) : "";
+        UIStateHelper.FormUIState state = mUIState.getValue();
+        InmuebleModel inmueble = mInmueble.getValue();
+
+        if (state != null && state.actualizacionExitosa) {
+            return "";
+        }
+
+        return inmueble != null ? String.valueOf(inmueble.getAmbientes()) : "";
+        //return mInmueble.getValue() != null ? String.valueOf(mInmueble.getValue().getAmbientes()) : "";
     }
 
     public String getValor() {
-        return mInmueble.getValue() != null ? String.valueOf(mInmueble.getValue().getValor()) : "";
+        UIStateHelper.FormUIState state = mUIState.getValue();
+        InmuebleModel inmueble = mInmueble.getValue();
+
+        if (state != null && state.actualizacionExitosa) {
+            return "";
+        }
+
+        return inmueble != null ? String.valueOf(inmueble.getValor()) : "";
+        //return mInmueble.getValue() != null ? String.valueOf(mInmueble.getValue().getValor()) : "";
     }
 
     public boolean getDisponible() {
         return mInmueble.getValue() != null && mInmueble.getValue().getDisponible();
+    }
+
+    /** =====  VALIDACIONES ===== */
+    private boolean validarCamposConHelpers(InmuebleModel inmueble) {
+        // Helper Validacion: Direccion
+        if (inmueble.getDireccion() == null || inmueble.getDireccion().trim().length() < 2) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La direccion es obligatorio", "direccion"));
+            return false;
+        }
+
+        // Helper Validacion: Tipo
+        if (inmueble.getTipo() == null || inmueble.getTipo().trim().length() < 2) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El Tipo debe tener al menos 2 caracteres", "tipo"));
+            return false;
+        }
+
+        // Validación: Precio (mayor a 0)
+        if (inmueble.getValor() <= 0) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El precio debe ser mayor a 0", "precio"));
+            return false;
+        }
+
+        // Validación: Ambientes (mayor a 0)
+        if (inmueble.getAmbientes() <= 0) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La cantidad de ambientes debe ser mayor a 0", "ambiente"));
+            return false;
+        }
+
+        // Validacion OK - volver al modo edición normal
+        actualizarUIState();
+        return true;
+    }
+    private boolean validarCrearInmuebleDTO(InmuebleCrearDTO inmuebleCrearDTO){
+        if (inmuebleCrearDTO.getDireccion() == null || inmuebleCrearDTO.getDireccion().trim().length() < 2) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La direccion es obligatorio", "direccion"));
+            return false;
+        }
+
+        // Helper Validacion: Tipo
+        if (inmuebleCrearDTO.getTipo() == null || inmuebleCrearDTO.getTipo().trim().length() < 2) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El Tipo debe tener al menos 2 caracteres", "tipo"));
+            return false;
+        }
+
+        // Validación: Precio (mayor a 0)
+        if (inmuebleCrearDTO.getValor() <= 0) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("El precio debe ser mayor a 0", "precio"));
+            return false;
+        }
+
+        // Validación: Ambientes (mayor a 0)
+        if (inmuebleCrearDTO.getAmbientes() <= 0) {
+            mUIState.setValue(UIStateHelper.PerfilUIStates.errorValidacion("La cantidad de ambientes debe ser mayor a 0", "ambiente"));
+            return false;
+        }
+
+        // Validacion OK - volver al modo edición normal
+        actualizarUIState();
+        return true;
     }
 }

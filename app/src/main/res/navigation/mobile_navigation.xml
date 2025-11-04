@@ -44,7 +44,13 @@
         android:id="@+id/informacionInmueble"
         android:name="com.ulp.appinmobiliaria.ui.inmueble.InmuebleFormFragment"
         android:label="Informacion Inmueble"
-        tools:layout="@layout/fragment_inmueble_form" />
+        tools:layout="@layout/fragment_inmueble_form">
+
+        <action
+            android:id="@+id/action_informacionInmuble_to_listaInmuebles"
+            app:destination="@+id/nav_inmueble" />
+
+</fragment>
 
     <fragment
         android:id="@+id/nav_inquilino"
