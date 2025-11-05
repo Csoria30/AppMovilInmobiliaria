@@ -50,7 +50,7 @@
             android:id="@+id/action_informacionInmuble_to_listaInmuebles"
             app:destination="@+id/nav_inmueble" />
 
-</fragment>
+    </fragment>
 
     <fragment
         android:id="@+id/nav_inquilino"
@@ -62,7 +62,18 @@
         android:id="@+id/nav_contrato"
         android:name="com.ulp.appinmobiliaria.ui.contrato.ContratoFragment"
         android:label="@string/menu_contratos"
-        tools:layout="@layout/fragment_contrato" />
+        tools:layout="@layout/fragment_contrato">
+
+        <action
+            android:id="@+id/action_listaContratos_to_DetalleContrato"
+            app:destination="@+id/contratoFormFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/contratoFormFragment"
+        android:name="com.ulp.appinmobiliaria.ui.contrato.ContratoFormFragment"
+        android:label="Contrato Detalles" />
 
     <fragment
         android:id="@+id/nav_logout"

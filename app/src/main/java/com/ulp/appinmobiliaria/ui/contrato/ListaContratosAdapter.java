@@ -11,9 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ulp.appinmobiliaria.R;
+import com.ulp.appinmobiliaria.helpers.ValidationHelper;
 import com.ulp.appinmobiliaria.model.ContratoModel;
 import com.ulp.appinmobiliaria.model.InmuebleModel;
 import com.ulp.appinmobiliaria.model.InquilinoModel;
@@ -47,8 +49,8 @@ public class ListaContratosAdapter extends RecyclerView.Adapter<ListaContratosAd
 
         holder.tvDireccion.setText("Dirección: " + contratoActual.getInmueble().getDireccion());
         holder.tvTipo.setText("Tipo: " + contratoActual.getInmueble().getTipo());
-        holder.tvFechaInicio.setText("Fecha inicio: " + contratoActual.getFechaInicio());
-        holder.tvFechaFin.setText("Fecha finalización: " + contratoActual.getFechaInicio());
+        holder.tvFechaInicio.setText("Fecha inicio: " + ValidationHelper.formatearFecha(contratoActual.getFechaInicio()));
+        holder.tvFechaFin.setText("Fecha finalización: " + ValidationHelper.formatearFecha(contratoActual.getFechaFinalizacion()));
         holder.tvMontoAlquiler.setText("Precio: " + contratoActual.getMontoAlquiler() + "");
 
         String estado = "Vencido";
@@ -63,6 +65,7 @@ public class ListaContratosAdapter extends RecyclerView.Adapter<ListaContratosAd
         holder.btnMasInfoContrato.setOnClickListener( v -> {
             Bundle args = new Bundle();
             args.putSerializable("contrato", contratoActual);
+            Navigation.findNavController(v).navigate(R.id.action_listaContratos_to_DetalleContrato, args);
         });
 
     }

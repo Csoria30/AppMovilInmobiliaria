@@ -1,6 +1,12 @@
 package com.ulp.appinmobiliaria.helpers;
 
 import android.util.Patterns;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -112,5 +118,29 @@ public class ValidationHelper {
             }
         }
         return true;
+    }
+
+    /**
+     * Formatea una fecha ISO (yyyy-MM-dd) a un formato legible para el usuario en español,
+     * p. ej. "1 de agosto de 2025".
+     * Usa java.time si está disponible (API 26+), y SimpleDateFormat como fallback.
+     */
+    public static String formatearFecha(String isoDate) {
+        if (isoDate == null || isoDate.trim().isEmpty()) return "";
+        try {
+            // Intentamos java.time (API 26+)
+            LocalDate ld = LocalDate.parse(isoDate);
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("es"));
+            return ld.format(fmt);
+        } catch (Throwable ignored) {
+            try {
+                SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                Date d = in.parse(isoDate);
+                SimpleDateFormat out = new SimpleDateFormat("d 'de' MMMM 'de' yyyy", new Locale("es"));
+                return out.format(d);
+            } catch (Exception e) {
+                return isoDate; // si falla, devolvemos el original
+            }
+        }
     }
 }

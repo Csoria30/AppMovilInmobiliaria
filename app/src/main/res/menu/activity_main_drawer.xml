@@ -16,10 +16,14 @@
             android:id="@+id/nav_inmueble"
             android:icon="@drawable/ic_inmuebles"
             android:title="@string/menu_inmuebles" />
+
+        <!--
         <item
             android:id="@+id/nav_inquilino"
             android:icon="@drawable/ic_inquilinos"
             android:title="@string/menu_inquilinos" />
+        -->
+
         <item
             android:id="@+id/nav_contrato"
             android:icon="@drawable/ic_contrato"

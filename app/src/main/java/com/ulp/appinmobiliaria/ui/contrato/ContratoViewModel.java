@@ -92,15 +92,14 @@ public class ContratoViewModel extends AndroidViewModel {
                     //LLamar a la segunda funcion de la API
                     if (!idsInmueblesConContrato.isEmpty()) {
                         cargarContratosVigentes();
+
+                        //UI
+                        UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.inicial();
+                        state.conCarga(false);
+                        mUIStateForm.postValue(state);
                     } else {
                         mListaContrato.postValue(new ArrayList<>());
                     }
-
-                    //UI
-                    UIStateHelper.FormUIState state = UIStateHelper.InmuebleUIState.inicial();
-                    state.conCarga(false);
-                    mUIStateForm.postValue(state);
-
                 }
             }
 
