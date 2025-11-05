@@ -2,8 +2,11 @@ package com.ulp.appinmobiliaria.request;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ulp.appinmobiliaria.model.ContratoModel;
+import com.ulp.appinmobiliaria.model.InmuebleConContratoModel;
 import com.ulp.appinmobiliaria.model.InmuebleCrearDTO;
 import com.ulp.appinmobiliaria.model.InmuebleModel;
+import com.ulp.appinmobiliaria.model.PagoModel;
 import com.ulp.appinmobiliaria.model.PropietarioModel;
 
 import java.util.List;
@@ -22,6 +25,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 
 public class ApiClient {
     public static final String URLBASE = "https://inmobiliariaulp-amb5hwfqaraweyga.canadacentral-01.azurewebsites.net/";
@@ -78,6 +82,23 @@ public class ApiClient {
                 @Header("Authorization") String token,
                 @Part MultipartBody.Part imagen,
                 @Part("inmueble") RequestBody inmuebleJson
+        );
+
+        @GET("api/Inmuebles/GetContratoVigente")
+        Call<List<InmuebleConContratoModel>> obtenerInmueblesConContratos(
+                @Header("Authorization") String token
+        );
+
+        @GET("api/contratos/inmueble/{id}")
+        Call<ContratoModel> obtenerContratoPorInmueble(
+                @Header("Authorization") String token,
+                @Path("id") int idInmueble
+        );
+
+        @GET("api/pagos/contrato/{id}")
+        Call<List<PagoModel>> obtenerPagosPorContrato(
+                @Header("Authorization") String token,
+                @Path("id") int idContrato
         );
 
 
