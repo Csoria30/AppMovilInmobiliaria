@@ -79,6 +79,10 @@
             android:id="@+id/action_detalleContratos_to_DetallePagos"
             app:destination="@+id/pagosFragment" />
 
+        <action
+            android:id="@+id/action_detalleContratos_to_DetalleInquilino"
+            app:destination="@+id/nav_inquilino" />
+
     </fragment>
 
     <fragment

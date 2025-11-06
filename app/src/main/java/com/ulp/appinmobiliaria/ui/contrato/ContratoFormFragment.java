@@ -21,6 +21,7 @@ import com.ulp.appinmobiliaria.R;
 import com.ulp.appinmobiliaria.databinding.FragmentContratoFormBinding;
 import com.ulp.appinmobiliaria.databinding.FragmentInmuebleFormBinding;
 import com.ulp.appinmobiliaria.model.ContratoModel;
+import com.ulp.appinmobiliaria.model.InquilinoModel;
 import com.ulp.appinmobiliaria.model.PagoDetalleDTO;
 import com.ulp.appinmobiliaria.request.ApiClient;
 import com.ulp.appinmobiliaria.ui.inmueble.InmuebleFormViewModel;
@@ -80,9 +81,17 @@ public class ContratoFormFragment extends Fragment {
             Bundle args = new Bundle();
             args.putSerializable("pagoDetalleDTO", pagoDetalleDTO); // Serializable para enviar Obj
             Navigation.findNavController(c).navigate(R.id.action_detalleContratos_to_DetallePagos, args);
-
-
         });
+
+        binding.btnVerInquilino.setOnClickListener( inquilino -> {
+            InquilinoModel inquilinoActual = new InquilinoModel();
+            inquilinoActual = viewModel.getmContrato().getValue().getInquilino();
+
+            Bundle args = new Bundle();
+            args.putSerializable("inquilino", inquilinoActual);
+            Navigation.findNavController(inquilino).navigate(R.id.action_detalleContratos_to_DetalleInquilino, args);
+        });
+
     }
 
     private void llenarCampos(){
