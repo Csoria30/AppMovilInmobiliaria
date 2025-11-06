@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- fila: fecha (izq) - monto (der) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvFechaPago"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="01/08/2025"
+                android:textColor="#2C3E50"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvMontoPago"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$ 1.000,00"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- detalle / concepto -->
+        <TextView
+            android:id="@+id/tvDetallePago"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pago correspondiente a agosto - Recibo N° 1234"
+            android:textColor="#34495E"
+            android:textSize="13sp"
+            android:layout_marginTop="6dp" />
+
+        <!-- fila: estado y boton ver -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/tvEstadoPago"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Estado: Registrado"
+                android:textColor="#2E7D32"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/btnVerPago"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Ver"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/primary"
+                android:textColor="@android:color/white"
+                android:minWidth="72dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

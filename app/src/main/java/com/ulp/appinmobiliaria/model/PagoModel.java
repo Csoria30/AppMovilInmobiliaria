@@ -1,6 +1,8 @@
 package com.ulp.appinmobiliaria.model;
 
-public class PagoModel {
+import java.io.Serializable;
+
+public class PagoModel implements Serializable {
     private int idPago;
     private String fechaPago;
     private double monto;

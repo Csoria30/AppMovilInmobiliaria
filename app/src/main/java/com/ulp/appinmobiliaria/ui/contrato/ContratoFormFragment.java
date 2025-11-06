@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +20,8 @@ import com.bumptech.glide.Glide;
 import com.ulp.appinmobiliaria.R;
 import com.ulp.appinmobiliaria.databinding.FragmentContratoFormBinding;
 import com.ulp.appinmobiliaria.databinding.FragmentInmuebleFormBinding;
+import com.ulp.appinmobiliaria.model.ContratoModel;
+import com.ulp.appinmobiliaria.model.PagoDetalleDTO;
 import com.ulp.appinmobiliaria.request.ApiClient;
 import com.ulp.appinmobiliaria.ui.inmueble.InmuebleFormViewModel;
 
@@ -66,7 +69,20 @@ public class ContratoFormFragment extends Fragment {
     }
 
     private void configurarEventos(){
+        binding.btnVerPagos.setOnClickListener( c -> {
+            PagoDetalleDTO pagoDetalleDTO = new PagoDetalleDTO();
+            ContratoModel contratoActual = viewModel.getmContrato().getValue();
 
+            pagoDetalleDTO.setIdContrato(contratoActual.getIdContrato());
+            pagoDetalleDTO.setDireccionInmueble(contratoActual.getInmueble().getDireccion());
+            pagoDetalleDTO.setMontoContrato(contratoActual.getMontoAlquiler());
+
+            Bundle args = new Bundle();
+            args.putSerializable("pagoDetalleDTO", pagoDetalleDTO); // Serializable para enviar Obj
+            Navigation.findNavController(c).navigate(R.id.action_detalleContratos_to_DetallePagos, args);
+
+
+        });
     }
 
     private void llenarCampos(){

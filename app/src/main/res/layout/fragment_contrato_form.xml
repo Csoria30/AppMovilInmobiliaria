@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:background="@drawable/login_gradient_background"
-    tools:context=".ui.contrato.ContratoDetalleFragment">
+    tools:context=".ui.contrato.ContratoFormFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

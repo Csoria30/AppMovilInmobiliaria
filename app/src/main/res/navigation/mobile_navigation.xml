@@ -73,7 +73,20 @@
     <fragment
         android:id="@+id/contratoFormFragment"
         android:name="com.ulp.appinmobiliaria.ui.contrato.ContratoFormFragment"
-        android:label="Contrato Detalles" />
+        android:label="Contrato Detalles">
+
+        <action
+            android:id="@+id/action_detalleContratos_to_DetallePagos"
+            app:destination="@+id/pagosFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/pagosFragment"
+        android:name="com.ulp.appinmobiliaria.ui.contrato.PagosFragment"
+        android:label="Detalle Pagos"
+        tools:layout="@layout/fragment_pagos" />
+
 
     <fragment
         android:id="@+id/nav_logout"
